@@ -1,17 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, Upload, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useOrderStore } from "../store/useOrderStore";
 import { useAuth0 } from "@auth0/auth0-react";
+import type { OrderData } from "@/shared/types/order";
 
 const OrderSuccessPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
-
-  // 1. ดึง getAccessTokenSilently มาใช้
+  const [order, setOrder] = useState<OrderData | null>(null);
   const { getAccessTokenSilently } = useAuth0();
-  const { uploadSlip, loading } = useOrderStore();
+  const { orders, uploadSlip, loading } = useOrderStore();
 
   const handleUploadSlip = async () => {
     if (!file || !id) return alert("กรุณาเลือกรูปภาพสลิปก่อนครับ");
@@ -34,6 +34,18 @@ const OrderSuccessPage = () => {
       alert("กรุณา Login ใหม่เพื่อยืนยันตัวตน");
     }
   };
+  useEffect(() => {
+    const fetchOrderData = async () => {
+      // สมมติว่าคุณมีฟังก์ชันดึงออเดอร์รายตัวใน store หรือ service
+      // const data = await getOrderById(id);
+      // setOrder(data);
+
+      // หรือดึงจาก store.orders ที่มีอยู่แล้ว
+      const foundOrder = orders.find((o) => o.id === id);
+      if (foundOrder) setOrder(foundOrder);
+    };
+    fetchOrderData();
+  }, [id, orders]);
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center py-20 px-6">
       <CheckCircle size={60} className="mb-6 text-green-500 animate-pulse" />
@@ -46,12 +58,23 @@ const OrderSuccessPage = () => {
       </p>
 
       <div className="w-full max-w-md grid grid-cols-1 gap-8">
-        {/* ส่วนที่ 1: ข้อมูลการโอนเงิน */}
+        {/* ส่วนที่ 1: ข้อมูลการโอนเงิน + ยอดเงิน (เพิ่มใหม่!) */}
         <div className="border-2 border-black p-8 relative">
           <span className="absolute -top-3 left-4 bg-white px-2 text-[10px] font-bold uppercase tracking-widest">
-            Payment Method
+            Payment Details
           </span>
-          <div className="text-center">
+
+          <div className="text-center mb-6">
+            <p className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1">
+              Total Amount to Pay
+            </p>
+            {/* ✅ แสดงยอดเงินตรงนี้ */}
+            <h2 className="text-4xl font-black text-indigo-600">
+              ฿{order?.totalPrice?.toLocaleString() ?? "..."}
+            </h2>
+          </div>
+
+          <div className="text-center pt-6 border-t border-dashed border-zinc-200">
             <p className="text-xs text-zinc-500 mb-2 uppercase tracking-widest">
               PromptPay / Bank Transfer
             </p>

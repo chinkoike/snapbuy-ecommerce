@@ -87,7 +87,7 @@ const ProfilePage = () => {
                   {userFromDb?.role || "Customer"}
                 </span>
               </div>
-              <div className="w-20 h-20 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-3xl mb-6 flex items-center justify-center text-3xl shadow-lg shadow-indigo-200">
+              <div className="w-20 h-20 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-3xl mb-6 flex items-center justify-center text-3xl shadow-lg shadow-indigo-200">
                 👤
               </div>
               <h3 className="text-xl font-black text-gray-900 truncate">
