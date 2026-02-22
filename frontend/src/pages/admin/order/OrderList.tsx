@@ -21,7 +21,6 @@ export const OrderList = () => {
     };
     loadOrders();
   }, [fetchOrders, getAccessTokenSilently]);
-
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
       const token = await getAccessTokenSilently();

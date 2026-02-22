@@ -9,6 +9,7 @@ export interface UserData {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+  token?: string;
 
   // --- ข้อมูลที่เพิ่มเข้ามาจากการ Join หรือ Aggregate ---
   orderCount?: number; // จำนวนออเดอร์ทั้งหมด

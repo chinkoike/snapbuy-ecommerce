@@ -7,6 +7,7 @@ export interface OrderData {
   totalPrice: number;
   status: OrderStatus;
   paymentIntentId: string | null;
+  slipUrl?: string | null;
   createdAt: string | Date;
   updatedAt: string | Date;
   // Relation data
@@ -39,6 +40,7 @@ export interface OrderState {
     orderData: CreateOrderDto,
     token: string,
   ) => Promise<OrderData | null>;
+  uploadSlip: (orderId: string, file: File, token: string) => Promise<boolean>;
 }
 export interface OrderItem {
   productId: string;
@@ -60,4 +62,9 @@ export interface CreateOrderDto {
   totalPrice: number; // แก้จาก totalAmount เป็น totalPrice
   shippingAddress: ShippingAddress;
   paymentMethod: string;
+}
+export interface OrderStore {
+  isUploading: boolean;
+  error: string | null;
+  uploadSlip: (orderId: string, file: File) => Promise<boolean>;
 }

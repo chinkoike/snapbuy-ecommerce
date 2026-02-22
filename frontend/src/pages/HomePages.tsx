@@ -20,71 +20,60 @@ const HomePage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
         {isAuthenticated ? (
           /* ----- Authenticated View: ธีมเน้นความเรียบหรู ----- */
-          <section className="animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-black pb-8 gap-4">
-              <div>
-                <h2 className="text-3xl md:text-5xl font-light tracking-tighter italic">
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b border-black pb-10 gap-6">
+              <div className="space-y-1">
+                <h2 className="text-4xl md:text-6xl font-light tracking-tighter italic leading-none">
                   WELCOME BACK,{" "}
-                  <span className="font-black uppercase">
-                    {user?.name?.split(" ")[0]}
+                  <span className="font-black uppercase not-italic">
+                    {user?.name?.split(" ")[0] || "GUEST"}
                   </span>
                 </h2>
-                <p className="text-gray-500 mt-2 tracking-widest uppercase text-xs">
-                  Exclusive Curations for Premium Members
-                </p>
+                <div className="flex items-center gap-3">
+                  <span className="h-[1px] w-8 bg-black"></span>
+                  <p className="text-gray-500 tracking-[0.4em] uppercase text-[10px] md:text-xs">
+                    Exclusive Curations for Premium Members
+                  </p>
+                </div>
               </div>
+
               <Link
                 to="/products"
-                className="text-sm font-bold border-b-2 border-black pb-1 hover:text-gray-400 hover:border-gray-400 transition uppercase tracking-widest"
+                className="group relative text-xs md:text-sm font-black uppercase tracking-[0.2em] transition-all"
               >
-                View All Collections
+                <span className="relative z-10">View All Collections</span>
+                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-black transform origin-left transition-transform group-hover:scale-x-110"></span>
               </Link>
             </div>
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-              {loading ? (
-                <div className="col-span-full py-20 text-center animate-pulse tracking-widest uppercase">
+            {/* Product Grid Area */}
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-40">
+                <div className="w-12 h-12 border-2 border-zinc-200 border-t-black rounded-full animate-spin mb-4"></div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.5em] animate-pulse">
                   Loading Inventory...
-                </div>
-              ) : (
-                products.slice(0, 6).map((product) => (
-                  <div key={product.id} className="group cursor-pointer">
-                    <div className="relative aspect-4/5 bg-gray-100 overflow-hidden mb-4">
-                      <img
-                        src={
-                          product.imageUrl ||
-                          "https://via.placeholder.com/400x500"
-                        }
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      {product.stock <= 0 && (
-                        <div className="absolute inset-0 bg-white/60 flex items-center justify-center font-bold uppercase tracking-widest">
-                          Sold Out
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold uppercase text-sm tracking-tight">
-                          {product.name}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-1 uppercase tracking-tighter">
-                          Member Price Available
-                        </p>
-                      </div>
-                      <p className="font-black">
-                        ฿{product.price.toLocaleString()}
-                      </p>
-                    </div>
-                    <button className="mt-4 w-full bg-black text-white py-3 text-xs font-bold uppercase tracking-[0.2em] hover:bg-gray-800 transition">
-                      Add to Bag
-                    </button>
+                </p>
+              </div>
+            ) : products && products.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                {products.map((product, index) => (
+                  <div
+                    key={product.id}
+                    className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+                    style={{ animationDelay: `${index * 100}ms` }} // ให้ค่อยๆ โผล่มาทีละชิ้น
+                  >
+                    <ProductCard product={product} />
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-20 text-center border border-dashed border-zinc-300">
+                <p className="text-xs uppercase tracking-widest text-zinc-400">
+                  No items available in this collection.
+                </p>
+              </div>
+            )}
           </section>
         ) : (
           /* ----- Guest View: ธีมเน้นความ Impact ขาวดำจัดจ้าน ----- */

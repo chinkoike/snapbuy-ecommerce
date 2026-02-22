@@ -25,7 +25,19 @@ export const orderService = {
     });
     return response.data;
   },
+  uploadOrderSlip: async (orderId: string, file: File, token: string) => {
+    const formData = new FormData();
+    formData.append("slip", file); // ชื่อ "slip" ต้องตรงกับ Backend
 
+    const response = await api.patch(`/api/${orderId}/upload-slip`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  },
   // อัปเดตสถานะออเดอร์
   updateStatus: async (
     orderId: string,

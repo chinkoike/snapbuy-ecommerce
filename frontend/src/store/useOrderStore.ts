@@ -26,6 +26,35 @@ export const useOrderStore = create<OrderState>((set) => ({
       return null;
     }
   },
+  uploadSlip: async (
+    orderId: string,
+    file: File,
+    token: string,
+  ): Promise<boolean> => {
+    set({ loading: true, error: null }); // ใช้ loading เพื่อให้เป็นมาตรฐานเดียวกับ createOrder
+    try {
+      const updatedOrder = await orderService.uploadOrderSlip(
+        orderId,
+        file,
+        token,
+      );
+
+      // อัปเดตข้อมูลในลิสต์ orders ทันที
+      set((state) => ({
+        orders: state.orders.map((order) =>
+          order.id === orderId ? { ...order, ...updatedOrder } : order,
+        ),
+        loading: false,
+      }));
+
+      return true;
+    } catch (err: unknown) {
+      console.log(err);
+
+      set({ loading: false });
+      return false;
+    }
+  },
   ///-------------------------------admin---------------------------
   fetchOrders: async (token: string) => {
     set({ loading: true, error: null });

@@ -67,7 +67,7 @@ model Order {
   paymentIntentId String?     @unique
 
   items           OrderItem[]
-
+  slipUrl         String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @default(now()) @updatedAt
 

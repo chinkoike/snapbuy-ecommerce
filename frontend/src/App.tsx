@@ -16,6 +16,7 @@ import CartPage from "./pages/CartPage";
 import { UserLayout } from "./components/ui/UserLayout";
 import CheckoutPage from "./pages/CheckOutPage";
 import LoginPage from "./pages/LoginPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 
 function App() {
   useAuthSync();
@@ -29,6 +30,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/order-success/:id" element={<OrderSuccessPage />} />
           {/* --- Protected Route --- */}
           <Route
             path="/profile"
