@@ -5,10 +5,11 @@
 
     "rootDirs": ["./src", "../shared"],
 
+    "outDir": "./dist",
     "lib": ["es2022"],
     "types": ["node"],
 
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
       "@/shared/*": ["../shared/*"]
