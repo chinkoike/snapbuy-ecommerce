@@ -1,12 +1,12 @@
 // frontend/src/components/ProductDetail.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"; // ต้องติดตั้ง react-router-dom
 import type { ProductData } from "@/shared/types/product";
 import { ProductService } from "../services/product.service";
 import { ArrowLeft, ShieldCheck, ShoppingBag, Star, Truck } from "lucide-react";
 import { useCartStore } from "../store/useCartStore";
 
-export const ProductDetail: React.FC = () => {
+export const ProductDetail = () => {
   const { id } = useParams<{ id: string }>(); // ดึง ID จาก URL
   const [product, setProduct] = useState<ProductData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

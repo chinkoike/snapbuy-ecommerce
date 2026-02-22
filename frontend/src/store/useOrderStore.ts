@@ -13,7 +13,40 @@ export const useOrderStore = create<OrderStore>((set) => ({
   loading: false,
   isUploading: false, // เพิ่มตัวแปรนี้ตาม Interface ใหม่
   error: null,
+  fetchOrderById: async (id: string, token: string) => {
+    set({ loading: true, error: null });
+    try {
+      // เรียกใช้ Service ที่เราสร้างไว้ (ต้องยิงไปที่ /api/user/order/:id)
+      const data = await orderService.getOrderById(id, token);
 
+      // อัปเดตข้อมูลเข้าไปใน orders list เพื่อให้หน้าอื่นๆ ได้อานิสงส์ไปด้วย
+      set((state) => ({
+        orders: state.orders.some((o) => o.id === data.id)
+          ? state.orders.map((o) => (o.id === data.id ? data : o))
+          : [...state.orders, data],
+        loading: false,
+      }));
+
+      return data; // คืนค่ากลับไปให้ Component ใช้ได้ทันที
+    } catch (err: unknown) {
+      console.log(err);
+
+      set({ loading: false });
+      return null;
+    }
+  },
+  fetchOrdersUser: async (token: string) => {
+    set({ loading: true });
+    try {
+      const data = await orderService.getMyOrders(token);
+      set({ orders: data, loading: false });
+    } catch (err: unknown) {
+      console.log(err);
+
+      set({ loading: false });
+      return null;
+    }
+  },
   // --- Client Side ---
   createOrder: async (orderData: CreateOrderDto, token: string) => {
     set({ loading: true, error: null });

@@ -1,4 +1,3 @@
-// src/pages/HomePage.tsx
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore"; // ดึงข้อมูลสินค้าจาก Store
@@ -8,7 +7,6 @@ import { ProductCard } from "../components/ui/ProductCard";
 const HomePage = () => {
   const { isAuthenticated, user, loginWithRedirect } = useAuth0();
 
-  // สมมติว่าใน productStore มีสถานะ products และฟังก์ชัน fetchProducts
   const { products, fetchProducts, loading } = useProductStore();
 
   useEffect(() => {

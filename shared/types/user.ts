@@ -40,3 +40,11 @@ export interface ExtendedUserState {
   fetchUsers: (token: string) => Promise<void>;
   toggleUserStatus: (id: string, token: string) => Promise<void>;
 }
+
+export interface UserProfileCardProps {
+  userFromDb: {
+    role?: string;
+    email?: string;
+  } | null; // รองรับกรณีข้อมูลยังไม่มาหรือเป็น null
+  isLoading?: boolean;
+}

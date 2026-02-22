@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { CheckCircle, Upload, ArrowLeft } from "lucide-react";
+import { CheckCircle, Upload, ArrowLeft, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOrderStore } from "../store/useOrderStore";
 import { useAuth0 } from "@auth0/auth0-react";
 import type { OrderData } from "@/shared/types/order";
+import { orderService } from "../services/order.service";
 
 const OrderSuccessPage = () => {
   const { id } = useParams();
@@ -11,41 +12,57 @@ const OrderSuccessPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [order, setOrder] = useState<OrderData | null>(null);
   const { getAccessTokenSilently } = useAuth0();
-  const { orders, uploadSlip, loading } = useOrderStore();
-
+  const { uploadSlip, loading } = useOrderStore();
+  const [statusMsg, setStatusMsg] = useState<{
+    type: "error" | "success";
+    text: string;
+  } | null>(null);
   const handleUploadSlip = async () => {
-    if (!file || !id) return alert("กรุณาเลือกรูปภาพสลิปก่อนครับ");
+    if (!file || !id) {
+      setStatusMsg({ type: "error", text: "กรุณาเลือกรูปภาพสลิปก่อนครับ" });
+      return;
+    }
 
     try {
-      // 2. ดึง Token ล่าสุดแบบเงียบๆ (Auth0 จะจัดการ Refresh ให้เองถ้าหมดอายุ)
       const token = await getAccessTokenSilently();
-
-      // 3. ส่ง Token เข้าไปใน Store ตามที่คุณเขียนไว้
       const success = await uploadSlip(id, file, token);
 
       if (success) {
-        alert("ส่งหลักฐานเรียบร้อย!");
-        navigate("/profile");
+        setStatusMsg({
+          type: "success",
+          text: "ส่งหลักฐานเรียบร้อย! กำลังกลับหน้าโปรไฟล์...",
+        });
+        setTimeout(() => navigate("/profile"), 2000);
       } else {
-        alert("อัปโหลดไม่สำเร็จ กรุณาลองใหม่");
+        setStatusMsg({ type: "error", text: "อัปโหลดไม่สำเร็จ กรุณาลองใหม่" });
       }
     } catch (error) {
       console.error("Auth0 Token Error:", error);
-      alert("กรุณา Login ใหม่เพื่อยืนยันตัวตน");
+      setStatusMsg({ type: "error", text: "กรุณา Login ใหม่เพื่อยืนยันตัวตน" });
     }
   };
   useEffect(() => {
     const fetchOrderData = async () => {
-      // สมมติว่าคุณมีฟังก์ชันดึงออเดอร์รายตัวใน store หรือ service
-      // const data = await getOrderById(id);
-      // setOrder(data);
+      try {
+        const token = await getAccessTokenSilently();
 
-      // หรือดึงจาก store.orders ที่มีอยู่แล้ว
-      const foundOrder = orders.find((o) => o.id === id);
-      if (foundOrder) setOrder(foundOrder);
+        // 1. สร้าง Service ใหม่ชื่อ getOrderById (ถ้ายังไม่มี)
+        // แทนที่จะเรียก fetchOrders (ที่โหลดทั้งหมด) ให้โหลดแค่ใบเดียว
+        const singleOrder = await orderService.getOrderById(
+          id as string,
+          token,
+        );
+
+        if (singleOrder) {
+          setOrder(singleOrder);
+        }
+      } catch (err) {
+        console.error("Error fetching success order:", err);
+      }
     };
-    fetchOrderData();
-  }, [id, orders]);
+
+    if (id) fetchOrderData();
+  }, [id]);
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center py-20 px-6">
       <CheckCircle size={60} className="mb-6 text-green-500 animate-pulse" />
@@ -84,7 +101,31 @@ const OrderSuccessPage = () => {
             </p>
           </div>
         </div>
-
+        {/*alert upload file slip */}
+        {statusMsg && (
+          <div
+            className={`mb-6 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${
+              statusMsg.type === "success"
+                ? "bg-green-50 text-green-700 border border-green-100"
+                : "bg-red-50 text-red-700 border border-red-100"
+            }`}
+          >
+            {statusMsg.type === "success" ? (
+              <CheckCircle size={18} />
+            ) : (
+              <AlertCircle size={18} />
+            )}
+            <p className="text-[10px] font-black uppercase tracking-widest">
+              {statusMsg.text}
+            </p>
+            <button
+              onClick={() => setStatusMsg(null)}
+              className="ml-auto hover:opacity-50"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         {/* ส่วนที่ 2: ฟอร์มอัปโหลดสลิป */}
         <div className="bg-zinc-50 p-8 border border-dashed border-zinc-300">
           <h3 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -120,7 +161,7 @@ const OrderSuccessPage = () => {
 
         {/* ปุ่มกลับหน้าหลัก */}
         <button
-          onClick={() => navigate("/shop")}
+          onClick={() => navigate("/products")}
           className="flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:underline"
         >
           <ArrowLeft size={14} /> Back to Shopping

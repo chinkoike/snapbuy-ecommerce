@@ -17,7 +17,18 @@ export const orderService = {
     });
     return response.data;
   },
-
+  getMyOrders: async (token: string): Promise<OrderData[]> => {
+    const response = await api.get("/api/user/order/my", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
+  getOrderById: async (id: string, token: string): Promise<OrderData> => {
+    const response = await api.get(`/api/user/order/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data; // Backend ต้องส่งข้อมูล Order กลับมา
+  },
   // ดึงข้อมูลออเดอร์ทั้งหมด
   getAllOrders: async (token: string): Promise<OrderData[]> => {
     const response = await api.get("/api/admin/orders", {

@@ -1,5 +1,5 @@
 // frontend/src/components/ProductList.tsx
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom"; // ✨ นำเข้ามา
 import { ProductCard } from "../components/ui/ProductCard";
 import { FilterSidebar } from "../components/ui/FilterSidebar";
@@ -7,7 +7,7 @@ import { Pagination } from "../components/ui/PaginationProps";
 import { useProductStore } from "../store/useProductStore";
 import { useCategoryStore } from "../store/useCategoryStore";
 
-export const ProductList: React.FC = () => {
+export const ProductList = () => {
   const { products, loading, error, fetchProducts, totalPages } =
     useProductStore();
   const {

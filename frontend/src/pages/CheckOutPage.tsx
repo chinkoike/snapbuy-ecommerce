@@ -18,7 +18,6 @@ const CheckoutPage = () => {
     phone: "",
     email: user?.email ?? "",
   });
-  if (loading) return <div>Loading SnapBuy...</div>;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -60,7 +59,15 @@ const CheckoutPage = () => {
       console.error("Order failed", err);
     }
   };
-
+  if (loading)
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="w-12 h-12 border-4 border-zinc-200 border-t-black rounded-full animate-spin mb-4" />
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] animate-pulse">
+          Loading...
+        </p>
+      </div>
+    );
   // ถ้าตะกร้าว่าง ให้แสดง UI บอกผู้ใช้ (UX ที่ดี)
   if (cart.length === 0 && !loading) {
     return (
@@ -69,7 +76,7 @@ const CheckoutPage = () => {
           Your cart is empty
         </h2>
         <button
-          onClick={() => navigate("/shop")}
+          onClick={() => navigate("/products")}
           className="text-xs font-black uppercase underline tracking-widest"
         >
           Return to shop

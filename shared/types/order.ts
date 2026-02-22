@@ -55,6 +55,7 @@ export interface OrderStore {
   error: string | null;
 
   fetchOrders: (token: string) => Promise<void>;
+  fetchOrdersUser: (token: string) => Promise<void>;
   updateOrderStatus: (
     orderId: string,
     newStatus: OrderStatus,
@@ -65,4 +66,13 @@ export interface OrderStore {
     token: string,
   ) => Promise<OrderData | null>;
   uploadSlip: (orderId: string, file: File, token: string) => Promise<boolean>;
+}
+export interface OrderListProps {
+  myOrders: OrderData[];
+  isLoading: boolean;
+  onSelectOrder: (order: OrderData) => void;
+}
+export interface OrderDetailModalProps {
+  order: OrderData | null;
+  onClose: () => void;
 }

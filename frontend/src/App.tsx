@@ -11,7 +11,7 @@ import { Dashboard } from "./pages/admin/Dashboard";
 import { AdminLayout } from "./components/layout/AdminLayout";
 import { ProductPage } from "./pages/admin/products/ProductPage";
 import { UserList } from "./pages/admin/ีusers/UserList";
-import { OrderList } from "./pages/admin/order/OrderList";
+import { OrderList } from "./pages/admin/order/AdminOrderList";
 import CartPage from "./pages/CartPage";
 import { UserLayout } from "./components/ui/UserLayout";
 import CheckoutPage from "./pages/CheckOutPage";
