@@ -3,8 +3,7 @@
     "target": "es2022",
     "module": "nodenext",
 
-    "rootDir": "..",
-    "outDir": "../dist",
+    "rootDirs": ["./src", "../shared"],
 
     "lib": ["es2022"],
     "types": ["node"],
