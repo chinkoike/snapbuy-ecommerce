@@ -31,7 +31,7 @@ const HomePage = () => {
                   </span>
                 </h2>
                 <div className="flex items-center gap-3">
-                  <span className="h-[1px] w-8 bg-black"></span>
+                  <span className="h-px w-8 bg-black"></span>
                   <p className="text-gray-500 tracking-[0.4em] uppercase text-[10px] md:text-xs">
                     Exclusive Curations for Premium Members
                   </p>
@@ -43,7 +43,7 @@ const HomePage = () => {
                 className="group relative text-xs md:text-sm font-black uppercase tracking-[0.2em] transition-all"
               >
                 <span className="relative z-10">View All Collections</span>
-                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-black transform origin-left transition-transform group-hover:scale-x-110"></span>
+                <span className="absolute bottom-0 left-0 w-full h-2px bg-black transform origin-left transition-transform group-hover:scale-x-110"></span>
               </Link>
             </div>
 

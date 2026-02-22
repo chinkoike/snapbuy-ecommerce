@@ -72,27 +72,27 @@ export const useOrderStore = create<OrderState>((set) => ({
   },
 
   updateOrderStatus: async (orderId, newStatus, token) => {
+    set({ loading: true });
     try {
-      const updatedOrder = await orderService.updateStatus(
-        orderId,
-        newStatus,
-        token,
-      );
+      // 1. ส่งไปบอก Backend ให้เปลี่ยน (ยิงไปที่ /api/admin/orders/:id/status)
+      await orderService.updateStatus(orderId, newStatus, token);
 
+      // 2. ถ้า Backend ไม่ Error (ยิงผ่าน) ให้เปลี่ยนสถานะใน UI ทันที
       set((state) => ({
         orders: state.orders.map((order) =>
           order.id === orderId
-            ? { ...order, status: updatedOrder.status }
+            ? { ...order, status: newStatus } // 👈 ใช้ newStatus ตรงๆ เลย
             : order,
         ),
+        loading: false,
       }));
+
+      console.log(
+        `✅ UI Updated: เปลี่ยน ID ${orderId.slice(-4)} เป็น ${newStatus}`,
+      );
     } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-        set({
-          loading: false,
-        });
-      }
+      console.error("❌ Update failed:", err);
+      set({ loading: false });
     }
   },
 }));

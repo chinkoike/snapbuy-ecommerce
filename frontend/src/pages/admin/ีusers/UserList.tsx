@@ -59,13 +59,10 @@ export const UserList = () => {
           </h2>
           {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
-        <button className="bg-black text-white px-6 py-2.5 rounded-xl font-bold hover:bg-gray-800 transition shadow-lg active:scale-95">
-          Export Users
-        </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-x-scroll md:overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-gray-50/50 border-b border-gray-200 text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em]">
             <tr>

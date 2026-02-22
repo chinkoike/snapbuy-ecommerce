@@ -34,7 +34,7 @@ export const ProductList = ({ onEdit }: ProductListProps) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 md:overflow-hidden overflow-x-scroll">
       <table className="w-full text-left">
         <thead className="bg-gray-50 border-b border-gray-200 text-gray-400 text-xs font-bold uppercase tracking-widest">
           <tr>
