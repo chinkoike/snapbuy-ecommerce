@@ -1,18 +1,25 @@
 import { create } from "zustand";
 import { orderService } from "../services/order.service";
-import type { CreateOrderDto, OrderState } from "@/shared/types/order";
+// นำเข้า Type ที่เราตกลงกันไว้ (เปลี่ยน path ให้ตรงกับโปรเจกต์คุณ)
+import type {
+  OrderStore,
+  OrderStatus,
+  CreateOrderDto,
+} from "@/shared/types/order";
 
-export const useOrderStore = create<OrderState>((set) => ({
+// 1. เปลี่ยนจาก OrderState เป็น OrderStore ตาม Interface ใหม่
+export const useOrderStore = create<OrderStore>((set) => ({
   orders: [],
   loading: false,
+  isUploading: false, // เพิ่มตัวแปรนี้ตาม Interface ใหม่
   error: null,
 
+  // --- Client Side ---
   createOrder: async (orderData: CreateOrderDto, token: string) => {
     set({ loading: true, error: null });
     try {
       const newOrder = await orderService.createOrder(orderData, token);
 
-      // เพิ่ม Order ใหม่ลงไปในลิสต์ (เผื่อใช้แสดงผลทันที)
       set((state) => ({
         orders: [newOrder, ...state.orders],
         loading: false,
@@ -26,12 +33,14 @@ export const useOrderStore = create<OrderState>((set) => ({
       return null;
     }
   },
+
   uploadSlip: async (
     orderId: string,
     file: File,
     token: string,
   ): Promise<boolean> => {
-    set({ loading: true, error: null }); // ใช้ loading เพื่อให้เป็นมาตรฐานเดียวกับ createOrder
+    // 2. ใช้ isUploading แทน loading ตามที่แยกไว้ใน Interface เพื่อไม่ให้ UI กระตุก
+    set({ isUploading: true, error: null });
     try {
       const updatedOrder = await orderService.uploadOrderSlip(
         orderId,
@@ -39,60 +48,55 @@ export const useOrderStore = create<OrderState>((set) => ({
         token,
       );
 
-      // อัปเดตข้อมูลในลิสต์ orders ทันที
       set((state) => ({
         orders: state.orders.map((order) =>
+          // รองรับทั้ง .id และ ._id (เผื่อกรณี mongo)
           order.id === orderId ? { ...order, ...updatedOrder } : order,
         ),
-        loading: false,
+        isUploading: false,
       }));
 
       return true;
     } catch (err: unknown) {
-      console.log(err);
-
-      set({ loading: false });
+      console.error("Upload slip error:", err);
+      set({ isUploading: false, error: "Upload failed" });
       return false;
     }
   },
-  ///-------------------------------admin---------------------------
+
+  // --- Admin Side ---
   fetchOrders: async (token: string) => {
     set({ loading: true, error: null });
     try {
       const data = await orderService.getAllOrders(token);
       set({ orders: data, loading: false });
     } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-        set({
-          loading: false,
-        });
-      }
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch orders";
+      set({ error: message, loading: false });
     }
   },
 
-  updateOrderStatus: async (orderId, newStatus, token) => {
+  updateOrderStatus: async (
+    orderId: string,
+    newStatus: OrderStatus,
+    token: string,
+  ) => {
     set({ loading: true });
     try {
-      // 1. ส่งไปบอก Backend ให้เปลี่ยน (ยิงไปที่ /api/admin/orders/:id/status)
       await orderService.updateStatus(orderId, newStatus, token);
 
-      // 2. ถ้า Backend ไม่ Error (ยิงผ่าน) ให้เปลี่ยนสถานะใน UI ทันที
       set((state) => ({
         orders: state.orders.map((order) =>
-          order.id === orderId
-            ? { ...order, status: newStatus } // 👈 ใช้ newStatus ตรงๆ เลย
-            : order,
+          order.id === orderId ? { ...order, status: newStatus } : order,
         ),
         loading: false,
       }));
 
-      console.log(
-        `✅ UI Updated: เปลี่ยน ID ${orderId.slice(-4)} เป็น ${newStatus}`,
-      );
+      console.log(`✅ UI Updated: ${orderId.slice(-4)} -> ${newStatus}`);
     } catch (err) {
       console.error("❌ Update failed:", err);
-      set({ loading: false });
+      set({ loading: false, error: "Update status failed" });
     }
   },
 }));

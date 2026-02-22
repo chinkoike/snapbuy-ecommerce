@@ -55,7 +55,10 @@ export const createOrder = async (req: Request, res: Response) => {
         });
 
         if (!product || product.stock < item.quantity) {
-          throw new Error(`Product ${item.name} is out of stock.`);
+          // 💡 ถ้าใน item ไม่มี name ให้ดึงจาก product ที่หาเจอใน DB แทน
+          throw new Error(
+            `Product ${product?.name || item.productId} is out of stock.`,
+          );
         }
 
         await tx.product.update({
