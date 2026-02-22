@@ -2,8 +2,8 @@
 
 import express from "express";
 
-import { checkJwt, requireAdmin } from "@/middleware/auth.js";
-import { getAdminDashboardStats } from "@/controller/admin.controller.js";
+import { checkJwt, requireAdmin } from "../middleware/auth.js";
+import { getAdminDashboardStats } from "../controller/admin.controller.js";
 
 const router = express.Router();
 

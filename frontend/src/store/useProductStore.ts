@@ -4,7 +4,7 @@ import type {
   CreateProductInput,
   ProductState,
   UpdateProductInput,
-} from "@/shared/types/product";
+} from "../../../shared/types/product";
 
 const getErrorMessage = (error: unknown) => {
   if (error instanceof Error) return error.message;

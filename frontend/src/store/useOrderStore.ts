@@ -5,7 +5,7 @@ import type {
   OrderStore,
   OrderStatus,
   CreateOrderDto,
-} from "@/shared/types/order";
+} from "../../../shared/types/order";
 
 // 1. เปลี่ยนจาก OrderState เป็น OrderStore ตาม Interface ใหม่
 export const useOrderStore = create<OrderStore>((set) => ({

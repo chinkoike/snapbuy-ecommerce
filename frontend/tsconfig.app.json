@@ -8,7 +8,7 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
     "paths": {
-      "@/shared/*": ["../shared/*"]
+      "../../../shared/*": ["../shared/*"]
     },
     /* Bundler mode */
     "moduleResolution": "bundler",

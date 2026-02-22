@@ -3,7 +3,7 @@ import { useUserStore } from "../store/ีuseUserStore";
 import { useOrderStore } from "../store/useOrderStore";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import type { OrderData } from "@/shared/types/order";
+import type { OrderData } from "../../../shared/types/order";
 import { UserProfileCard } from "../components/ui/UserProfileCard";
 import { OrderList } from "../components/ui/OrderList";
 import { OrderDetailModal } from "../components/ui/OrderDetailModal";

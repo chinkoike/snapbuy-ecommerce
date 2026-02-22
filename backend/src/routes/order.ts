@@ -7,8 +7,8 @@ import {
   getMyOrders,
   getOrderById,
   uploadSlip,
-} from "@/controller/order.controller.js";
-import { uploadCloud } from "@/lib/cloudinary.js";
+} from "../controller/order.controller.js";
+import { uploadCloud } from "../lib/cloudinary.js";
 
 const router = express.Router();
 router.get("/user/order/my", checkJwt, getMyOrders);

@@ -1,6 +1,6 @@
 // src/services/categoryService.ts
 import axios from "axios";
-import type { CategoryData } from "@/shared/types/product";
+import type { CategoryData } from "../../../shared/types/product";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 

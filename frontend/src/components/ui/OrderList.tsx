@@ -1,4 +1,4 @@
-import type { OrderListProps } from "@/shared/types/order";
+import type { OrderListProps } from "../../../shared/types/order";
 import React from "react";
 import { Link } from "react-router-dom";
 

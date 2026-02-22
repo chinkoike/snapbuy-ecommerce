@@ -1,5 +1,5 @@
 // src/store/categoryStore.ts
-import type { CategoryStore } from "@/shared/types/product";
+import type { CategoryStore } from "../../../shared/types/product";
 import { create } from "zustand";
 import { categoryService } from "../services/category.service";
 

@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
-import { prisma } from "@/lib/prisma.js";
-import type { UserData } from "@/shared/types/user.js";
+import { prisma } from "../lib/prisma.js";
 
 export const getUser = async (req: Request, res: Response) => {
   const payload = req.auth?.payload;

@@ -3,7 +3,7 @@ import { CheckCircle, Upload, ArrowLeft, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOrderStore } from "../store/useOrderStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { OrderData } from "@/shared/types/order";
+import type { OrderData } from "../../../shared/types/order";
 import { orderService } from "../services/order.service";
 
 const OrderSuccessPage = () => {

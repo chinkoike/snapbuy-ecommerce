@@ -1,4 +1,4 @@
-import type { UserProfileCardProps } from "@/shared/types/user";
+import type { UserProfileCardProps } from "../../../shared/types/user";
 import React from "react";
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({

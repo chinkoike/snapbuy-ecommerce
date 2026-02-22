@@ -1,6 +1,6 @@
 // frontend/src/services/admin.service.ts
 import { api } from "../lib/axios";
-import type { AdminStatsResponse } from "@/shared/types/admin";
+import type { AdminStatsResponse } from "../../../shared/types/admin";
 
 export const AdminService = {
   getStats: async (token: string): Promise<AdminStatsResponse> => {

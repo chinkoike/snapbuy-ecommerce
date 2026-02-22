@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
-import { prisma } from "@/lib/prisma.js";
+import { prisma } from "../lib/prisma.js";
 import type {
   ProductDetailResponse,
   ProductListResponse,
-} from "@/shared/types/api.js";
-import type { ProductData } from "@/shared/types/product.js";
-import type { CreateProductInput } from "@/shared/types/product.js";
+} from "../../../shared/types/api.js";
+import type { ProductData } from "../../../shared/types/product.js";
+import type { CreateProductInput } from "../../../shared/types/product.js";
 import { Prisma } from "@prisma/client";
 
 //----------------------get products controller---------------------------------------

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ProductForm } from "./ProductForm";
 import { ProductList } from "./ProductList";
-import type { ProductData } from "@/shared/types/product";
+import type { ProductData } from "../../../shared/types/product";
 
 export const ProductPage = () => {
   const [showForm, setShowForm] = useState(false);

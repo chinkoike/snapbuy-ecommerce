@@ -1,4 +1,4 @@
-import type { ProductCardProps } from "@/shared/types/product";
+import type { ProductCardProps } from "../../../shared/types/product";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../../store/useCartStore";
 

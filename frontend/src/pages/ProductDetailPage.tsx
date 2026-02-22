@@ -1,7 +1,7 @@
 // frontend/src/components/ProductDetail.tsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"; // ต้องติดตั้ง react-router-dom
-import type { ProductData } from "@/shared/types/product";
+import type { ProductData } from "../../../shared/types/product";
 import { ProductService } from "../services/product.service";
 import { ArrowLeft, ShieldCheck, ShoppingBag, Star, Truck } from "lucide-react";
 import { useCartStore } from "../store/useCartStore";

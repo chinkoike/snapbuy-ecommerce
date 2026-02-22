@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useProductStore } from "../../../store/useProductStore";
 import { useCategoryStore } from "../../../store/useCategoryStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { ProductFormProps } from "@/shared/types/product";
+import type { ProductFormProps } from "../../../shared/types/product";
 import { X } from "lucide-react"; // แนะนำให้ลง lucide-react เพื่อความสวยงาม
 
 export const ProductForm = ({

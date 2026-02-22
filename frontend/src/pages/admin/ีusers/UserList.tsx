@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "../../../store/ีuseUserStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { UserData } from "@/shared/types/user"; // ตรวจสอบ path type ของคุณ
+import type { UserData } from "../../../shared/types/user"; // ตรวจสอบ path type ของคุณ
 
 export const UserList = () => {
   const { getAccessTokenSilently } = useAuth0();

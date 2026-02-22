@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { AdminService } from "../services/admin.service";
-import type { AdminState } from "@/shared/types/admin";
+import type { AdminState } from "../../../shared/types/admin";
 
 export const useAdminStore = create<AdminState>((set) => ({
   stats: null,

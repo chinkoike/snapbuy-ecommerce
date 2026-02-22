@@ -5,8 +5,8 @@ import {
   getProductById,
   getProducts,
   updateProduct,
-} from "@/controller/product.controller.js";
-import { requireAdmin, checkJwt } from "@/middleware/auth.js";
+} from "../controller/product.controller.js";
+import { requireAdmin, checkJwt } from "../middleware/auth.js";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { prisma } from "@/lib/prisma.js";
-import type { CreateOrderDto, OrderData } from "@/shared/types/order.js";
+import { prisma } from "../lib/prisma.js";
+import type { CreateOrderDto, OrderData } from "../../../shared/types/order.js";
 import type { Prisma } from "@prisma/client";
 
 export const getAllOrders = async (req: Request, res: Response) => {

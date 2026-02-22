@@ -3,7 +3,7 @@ import type {
   CreateProductInput,
   UpdateProductInput,
   GetProductsResponse,
-} from "@/shared/types/product";
+} from "../../../shared/types/product";
 import { api } from "../lib/axios";
 
 export const ProductService = {

@@ -1,7 +1,7 @@
 // src/store/useCartStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CartState } from "@/shared/types/cart.js";
+import type { CartState } from "../../../shared/types/cart.js";
 
 export const useCartStore = create<CartState>()(
   persist(

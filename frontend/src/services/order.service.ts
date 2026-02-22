@@ -3,7 +3,7 @@ import type {
   CreateOrderDto,
   OrderData,
   OrderStatus,
-} from "@/shared/types/order";
+} from "../../../shared/types/order";
 
 export const orderService = {
   createOrder: async (

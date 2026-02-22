@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 import { auth } from "express-oauth2-jwt-bearer";
 import type { Request, Response, NextFunction } from "express";
-import { prisma } from "@/lib/prisma.js";
 
 dotenv.config();
 

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ExtendedUserState } from "@/shared/types/user.js";
+import type { ExtendedUserState } from "../../../shared/types/user.js";
 import { UserService } from "../services/user.service";
 
 export const useUserStore = create<ExtendedUserState>((set) => ({
