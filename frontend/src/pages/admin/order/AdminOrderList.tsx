@@ -38,8 +38,10 @@ export const OrderList = () => {
 
   if (loading && orders.length === 0)
     return (
-      <div className="p-20 text-center text-gray-400 animate-pulse font-bold">
-        กำลังดึงข้อมูลออเดอร์...
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="animate-pulse font-black tracking-widest uppercase opacity-20">
+          Syncing Data...
+        </div>
       </div>
     );
 
@@ -51,9 +53,6 @@ export const OrderList = () => {
           <h2 className="text-3xl font-black text-gray-900 tracking-tight">
             Order Management
           </h2>
-          <p className="text-gray-500 text-sm">
-            ตรวจสอบและจัดการสถานะการจัดส่งสินค้า
-          </p>
         </div>
 
         <div className="flex bg-gray-100 p-1 rounded-xl shadow-xl border border-gray-100 overflow-hidden">
