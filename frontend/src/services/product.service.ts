@@ -31,15 +31,30 @@ export const ProductService = {
   // **แก้ตรงนี้**: เปลี่ยน data เป็น CreateProductInput
   create: async (
     data: CreateProductInput,
+    file: File, // เพิ่ม parameter รับไฟล์รูปภาพ
     token: string,
   ): Promise<ProductData> => {
-    console.log("TOKEN:", token);
+    // 1. สร้าง FormData และ Append ข้อมูลทั้งหมดเข้าไป
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description || "");
+    formData.append("price", data.price.toString());
+    formData.append("stock", data.stock.toString());
+    formData.append("categoryId", data.categoryId);
 
-    const res = await api.post("/api/admin/products", data, {
+    // 'image' ต้องตรงกับที่ตั้งไว้ใน Backend (upload.single('image'))
+    if (file) {
+      formData.append("image", file);
+    }
+
+    // 2. ส่ง request โดย Axios จะจัดการ Content-Type ให้เองเมื่อเห็น FormData
+    const res = await api.post("/api/admin/products", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
+        // ไม่ต้องใส่ Content-Type: multipart/form-data นะครับ Axios จัดการให้เอง
       },
     });
+
     return res.data;
   },
 

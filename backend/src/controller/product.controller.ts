@@ -112,10 +112,22 @@ export const getProductById = async (req: Request, res: Response) => {
 
 //----------------------create product controller---------------------------------------
 export const createProduct = async (req: Request, res: Response) => {
-  const data: CreateProductInput = req.body;
-
   try {
-    // 1️⃣ เช็ค category ก่อน
+    const data: CreateProductInput = req.body;
+
+    // 1. ดึงไฟล์รูปภาพจาก Multer (ที่อัปโหลดไป Cloudinary แล้ว)
+    const file = req.file as any;
+
+    // ตรวจสอบว่ามีไฟล์ส่งมาไหม (ถ้า Business Logic บังคับว่าต้องมีรูป)
+    if (!file) {
+      return res.status(400).json({ error: "กรุณาอัปโหลดรูปภาพสินค้า" });
+    }
+
+    // 2. ดึง URL จาก Cloudinary
+    // ปกติจะเป็น file.path หรือ file.secure_url ขึ้นอยู่กับการตั้งค่า storage
+    const imageUrl = file.path || file.secure_url;
+
+    // 3. เช็ค category ก่อน
     const categoryExists = await prisma.category.findUnique({
       where: { id: data.categoryId },
     });
@@ -124,22 +136,28 @@ export const createProduct = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid categoryId" });
     }
 
-    // 2️⃣ แปลงตัวเลข
+    // 4. สร้าง Product พร้อมบันทึก imageUrl ที่ได้จาก Cloudinary
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
         description: data.description,
-        price: Number(data.price),
+        price: Number(data.price), // มั่นใจว่าแปลงเป็น Number เพราะ FormData ส่งมาเป็น String
         stock: Number(data.stock),
-        imageUrl: data.imageUrl || null,
+        imageUrl: imageUrl, // ใช้ URL จาก Cloudinary แทน data.imageUrl เดิม
         categoryId: data.categoryId,
       },
     });
 
-    res.status(201).json(newProduct);
-  } catch (error) {
+    return res.status(201).json({
+      message: "สร้างสินค้าสำเร็จ",
+      product: newProduct,
+    });
+  } catch (error: any) {
     console.error("Database Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({
+      error: "Internal Server Error",
+      details: error.message,
+    });
   }
 };
 

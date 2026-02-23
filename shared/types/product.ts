@@ -38,6 +38,7 @@ export type CreateProductInput = {
   price: number;
   stock: number;
   imageUrl?: string | null;
+
   categoryId: string;
 };
 export type UpdateProductInput = {
@@ -59,7 +60,11 @@ export interface ProductState {
     page?: number,
     search?: string,
   ) => Promise<void>;
-  createProduct: (data: CreateProductInput, token: string) => Promise<void>;
+  createProduct: (
+    data: CreateProductInput,
+    file: File,
+    token: string,
+  ) => Promise<void>;
   updateProduct: (
     id: string,
     data: UpdateProductInput,

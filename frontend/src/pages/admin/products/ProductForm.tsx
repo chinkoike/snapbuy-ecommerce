@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; // เพิ่ม useRef
 import { useProductStore } from "../../../store/useProductStore";
 import { useCategoryStore } from "../../../store/useCategoryStore";
 import { useAuth0 } from "@auth0/auth0-react";
 import type { ProductFormProps } from "../../../../../shared/types/product";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, X, Upload } from "lucide-react"; // เพิ่ม Icon Upload
+
 export const ProductForm = ({
   initialData,
   onSuccess,
@@ -13,12 +14,17 @@ export const ProductForm = ({
   const { categories, fetchCategories } = useCategoryStore();
   const { getAccessTokenSilently } = useAuth0();
 
+  // 1. เพิ่ม State สำหรับเก็บไฟล์ที่เลือก
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>(
+    initialData?.imageUrl || "",
+  );
+
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     price: initialData?.price?.toString() || "",
     stock: initialData?.stock?.toString() || "",
     description: initialData?.description || "",
-    imageUrl: initialData?.imageUrl || "",
     categoryId: initialData?.categoryId || "",
   });
 
@@ -26,9 +32,20 @@ export const ProductForm = ({
     fetchCategories();
   }, [fetchCategories]);
 
+  // ฟังก์ชันจัดการการเปลี่ยนไฟล์
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // ทำ Preview รูปภาพ
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = await getAccessTokenSilently();
+
     const payload = {
       ...formData,
       price: Number(formData.price),
@@ -36,19 +53,19 @@ export const ProductForm = ({
     };
 
     if (initialData) {
+      // สำหรับ Update (ถ้ามีระบบอัปโหลดรูปตอนแก้ก็ส่ง selectedFile ไปด้วย)
       await updateProduct(initialData.id, payload, token);
     } else {
-      await createProduct(payload, token);
+      // 2. ส่ง selectedFile ไปพร้อมกับ payload (เรียงลำดับตาม Store ที่เราแก้)
+      if (!selectedFile) return alert("กรุณาเลือกรูปภาพสินค้า");
+      await createProduct(payload, selectedFile, token);
     }
     onSuccess();
   };
 
   return (
-    // Backdrop สำหรับ Popup
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
-      {/* Modal Container */}
       <div className="bg-white w-full max-w-lg border border-black shadow-[20px_20px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 duration-200">
-        {/* Header - ปรับให้ดูเป็น Label ระบบ */}
         <div className="flex justify-between items-center p-8 border-b border-zinc-100 bg-zinc-50">
           <div className="space-y-1">
             <p className="text-[9px] font-black text-zinc-400 tracking-[0.4em] uppercase">
@@ -66,10 +83,46 @@ export const ProductForm = ({
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-white">
+        <form
+          onSubmit={handleSubmit}
+          className="p-10 space-y-8 bg-white max-h-[80vh] overflow-y-auto"
+        >
           <div className="space-y-6">
-            {/* Input: Product Name */}
+            {/* 3. ส่วนอัปโหลดรูปภาพใหม่ (แทนที่ Input URL เดิม) */}
+            <div className="group">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
+                Visual_Asset_Upload
+              </label>
+              <div className="mt-2 relative group/upload">
+                <input
+                  type="file"
+                  id="file-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                <label
+                  htmlFor="file-upload"
+                  className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-200 hover:border-black transition-all cursor-pointer bg-zinc-50 overflow-hidden"
+                >
+                  {previewUrl ? (
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center text-zinc-400 group-hover/upload:text-black">
+                      <Upload size={24} strokeWidth={3} />
+                      <span className="text-[10px] font-black uppercase mt-2">
+                        Select_Image
+                      </span>
+                    </div>
+                  )}
+                </label>
+              </div>
+            </div>
+
             <div className="group">
               <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
                 Product_Identity
@@ -85,7 +138,6 @@ export const ProductForm = ({
               />
             </div>
 
-            {/* Grid: Price & Stock */}
             <div className="grid grid-cols-2 gap-10">
               <div className="group">
                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
@@ -119,7 +171,6 @@ export const ProductForm = ({
               </div>
             </div>
 
-            {/* Select: Category */}
             <div className="group">
               <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
                 Classification
@@ -145,24 +196,8 @@ export const ProductForm = ({
                 </div>
               </div>
             </div>
-
-            {/* Input: Image URL */}
-            <div className="group">
-              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
-                Visual_Asset_URL
-              </label>
-              <input
-                className="w-full border-b-2 border-zinc-100 py-3 text-[10px] font-medium focus:border-black outline-none transition-all placeholder:text-zinc-200"
-                placeholder="HTTPS://IMAGE_RESOURCE_LINK..."
-                value={formData.imageUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, imageUrl: e.target.value })
-                }
-              />
-            </div>
           </div>
 
-          {/* Footer Actions */}
           <div className="pt-4 flex flex-col sm:flex-row gap-4">
             <button
               type="button"

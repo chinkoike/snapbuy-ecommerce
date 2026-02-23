@@ -32,11 +32,16 @@ export const useProductStore = create<ProductState>((set) => ({
     }
   },
 
-  createProduct: async (data: CreateProductInput, token: string) => {
+  createProduct: async (
+    data: CreateProductInput,
+    file: File,
+    token: string,
+  ) => {
     try {
       set({ loading: true, error: null });
 
-      const newProduct = await ProductService.create(data, token);
+      // ส่งทั้ง data และ file ไปที่ Service
+      const newProduct = await ProductService.create(data, file, token);
 
       set((state) => ({
         products: [...state.products, newProduct],
