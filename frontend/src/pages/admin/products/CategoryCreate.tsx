@@ -52,7 +52,7 @@ export const CategoryCreate = () => {
         <button
           type="submit"
           disabled={loading || !name.trim()}
-          className="bg-gray-900 text-white px-6 py-2 rounded-xl font-medium hover:bg-black disabled:bg-gray-400 transition-colors"
+          className="bg-black hover:bg-gray-600 text-white px-6 py-2 rounded-xl font-medium  disabled:bg-gray-400 transition-colors"
         >
           {loading ? "Adding..." : "Add"}
         </button>

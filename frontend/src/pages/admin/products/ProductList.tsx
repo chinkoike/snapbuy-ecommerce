@@ -9,7 +9,7 @@ interface ProductListProps {
 
 export const ProductList = ({ onEdit }: ProductListProps) => {
   const { getAccessTokenSilently } = useAuth0();
-  const { products, fetchProducts, deleteProduct } = useProductStore();
+  const { loading, products, fetchProducts, deleteProduct } = useProductStore();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -32,7 +32,14 @@ export const ProductList = ({ onEdit }: ProductListProps) => {
       setProcessingId(null);
     }
   };
-
+  if (loading && products.length === 0)
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="animate-pulse font-black tracking-widest uppercase opacity-20">
+          Syncing Data...
+        </div>
+      </div>
+    );
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 md:overflow-hidden overflow-x-scroll">
       <table className="w-full text-left">

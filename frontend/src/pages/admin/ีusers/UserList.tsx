@@ -44,8 +44,10 @@ export const UserList = () => {
 
   if (loading && users.length === 0)
     return (
-      <div className="p-8 text-center animate-pulse text-gray-500">
-        Loading users...
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="animate-pulse font-black tracking-widest uppercase opacity-20">
+          Syncing Data...
+        </div>
       </div>
     );
 
