@@ -22,7 +22,13 @@ router.post(
   uploadCloud.single("image"), // <--- ต้องมีบรรทัดนี้!
   createProduct,
 );
-router.put("/admin/products/:id", checkJwt, requireAdmin, updateProduct);
+router.patch(
+  "/admin/products/:id",
+  checkJwt,
+  requireAdmin,
+  uploadCloud.single("image"),
+  updateProduct,
+);
 router.patch(
   "/admin/products/:id",
   checkJwt,

@@ -69,6 +69,7 @@ export interface ProductState {
     id: string,
     data: UpdateProductInput,
     token: string,
+    file: File,
   ) => Promise<void>;
   deleteProduct: (id: string, token: string) => Promise<void>;
 }
@@ -99,3 +100,6 @@ export interface GetProductsResponse {
   totalPages: number;
   totalCount: number;
 }
+export type UpdateProductPayload = Partial<UpdateProductInput> & {
+  imageFile?: File | null; // เพิ่มฟิลด์สำหรับเก็บไฟล์รูปภาพที่จะอัปโหลดใหม่
+};

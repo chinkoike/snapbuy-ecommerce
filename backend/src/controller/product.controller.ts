@@ -166,6 +166,9 @@ export const updateProduct = async (req: Request, res: Response) => {
   const id = req.params.id as string;
   const rawBody: Partial<ProductData> = req.body;
 
+  // 1. ดึงไฟล์รูปภาพ (ถ้ามีการอัปโหลดใหม่เข้ามา)
+  const file = req.file as any;
+
   try {
     const existingProduct = await prisma.product.findUnique({
       where: { id },
@@ -177,15 +180,26 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     const dataToUpdate: any = {};
 
+    // จัดการข้อมูลทั่วไป
     if (rawBody.name !== undefined) dataToUpdate.name = rawBody.name;
     if (rawBody.description !== undefined)
       dataToUpdate.description = rawBody.description;
     if (rawBody.price !== undefined) dataToUpdate.price = Number(rawBody.price);
     if (rawBody.stock !== undefined) dataToUpdate.stock = Number(rawBody.stock);
-    if (rawBody.imageUrl !== undefined)
-      dataToUpdate.imageUrl = rawBody.imageUrl;
 
-    // ✅ ถ้ามีการเปลี่ยน categoryId ต้องเช็คก่อน
+    // 2. Logic การอัปเดตรูปภาพ
+    if (file) {
+      // ถ้ามีการส่งไฟล์ใหม่มา ให้ใช้ URL จาก Cloudinary
+      dataToUpdate.imageUrl = file.path || file.secure_url;
+
+      // OPTIONAL: ถ้าอยากลบรูปเก่าใน Cloudinary ต้องใช้ public_id ในการสั่งลบ
+      // แต่เบื้องต้นเขียนทับ imageUrl ใน DB แบบนี้ก็ทำงานได้แล้วครับ
+    } else if (rawBody.imageUrl !== undefined) {
+      // ถ้าไม่มีไฟล์ แต่มีการส่ง imageUrl มา (เช่น ส่ง string เดิมกลับมา)
+      dataToUpdate.imageUrl = rawBody.imageUrl;
+    }
+
+    // 3. เช็ค Category เหมือนเดิม
     if (rawBody.categoryId !== undefined) {
       const categoryExists = await prisma.category.findUnique({
         where: { id: rawBody.categoryId },
@@ -194,7 +208,6 @@ export const updateProduct = async (req: Request, res: Response) => {
       if (!categoryExists) {
         return res.status(400).json({ error: "Invalid categoryId" });
       }
-
       dataToUpdate.categoryId = rawBody.categoryId;
     }
 
@@ -204,8 +217,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       include: { category: true },
     });
 
-    const responseData: ProductDetailResponse = updatedProduct;
-    res.json(responseData);
+    res.json(updatedProduct);
   } catch (error) {
     console.error("Update Product Error:", error);
     res.status(500).json({ error: "Internal Server Error" });

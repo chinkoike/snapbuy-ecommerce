@@ -1,8 +1,8 @@
 import type {
   ProductData,
   CreateProductInput,
-  UpdateProductInput,
   GetProductsResponse,
+  UpdateProductPayload,
 } from "../../../shared/types/product";
 import { api } from "../lib/axios";
 
@@ -60,14 +60,26 @@ export const ProductService = {
 
   update: async (
     id: string,
-    data: UpdateProductInput,
+    data: UpdateProductPayload,
     token: string,
-  ): Promise<ProductData> => {
-    // ✅ ต้องส่งเป็น { headers: { Authorization: `Bearer ${token}` } }
-    const res = await api.put(`/api/admin/products/${id}`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    file: File,
+  ) => {
+    const formData = new FormData();
+
+    // 1. วนลูปใส่ข้อมูล Text ทั้งหมด
+    (Object.keys(data) as Array<keyof UpdateProductPayload>).forEach((key) => {
+      if (data[key] !== undefined && key !== "imageFile") {
+        formData.append(key, String(data[key]));
+      }
+    });
+
+    // 2. ถ้ามีไฟล์รูปภาพใหม่ ให้ append เข้าไป
+    if (file) {
+      formData.append("image", file);
+    }
+
+    const res = await api.patch(`/api/admin/products/${id}`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
     });
     return res.data;
   },
