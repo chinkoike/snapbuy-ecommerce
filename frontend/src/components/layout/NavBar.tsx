@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useCategoryStore } from "../../store/useCategoryStore";
 import { Search, ShoppingBag, X } from "lucide-react";
 import { useCartStore } from "../../store/useCartStore";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 
 const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState("");
