@@ -15,7 +15,22 @@ const PORT = process.env.PORT || 4000;
 
 app.use(
   cors({
-    origin: true,
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://snapbuy-ecommerce.vercel.app",
+        "http://localhost:5174",
+      ];
+
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
