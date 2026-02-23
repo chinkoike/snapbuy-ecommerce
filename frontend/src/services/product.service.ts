@@ -58,6 +58,7 @@ export const ProductService = {
     return res.data;
   },
 
+  // ProductService.ts
   update: async (
     id: string,
     data: UpdateProductPayload,
@@ -66,17 +67,20 @@ export const ProductService = {
   ) => {
     const formData = new FormData();
 
-    // 1. วนลูปใส่ข้อมูล Text ทั้งหมด
-    // ProductService.ts
     Object.keys(data).forEach((key) => {
       const value = data[key as keyof UpdateProductPayload];
-      // ส่งเฉพาะค่าที่มีอยู่จริง และไม่ส่ง imageFile ซ้ำในนี้
-      if (value !== undefined && value !== null && key !== "imageFile") {
+
+      // ✅ เพิ่มเงื่อนไข value !== "" เพื่อไม่ส่งค่าว่างไปกวน Backend
+      if (
+        value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        key !== "imageFile"
+      ) {
         formData.append(key, String(value));
       }
     });
 
-    // 2. ถ้ามีไฟล์รูปภาพใหม่ ให้ append เข้าไป
     if (file) {
       formData.append("image", file);
     }
