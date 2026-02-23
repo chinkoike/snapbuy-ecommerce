@@ -1,4 +1,3 @@
-// frontend/src/components/FilterSidebar.tsx
 import type { FilterSidebarProps } from "../../../../shared/types/product";
 import React from "react";
 
