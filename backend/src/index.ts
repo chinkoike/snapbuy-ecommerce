@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(
   cors({
-    origin: "https://snapbuy-ecommerce-live.vercel.app/",
+    origin: "https://snapbuy-ecommerce.vercel.app",
     credentials: true,
   }),
 );
