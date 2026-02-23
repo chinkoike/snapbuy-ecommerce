@@ -60,7 +60,7 @@ export const OrderList = () => {
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-lg text-[10px] font-black tracking-widest transition-all ${
+              className={`px-4 py-2 rounded-lg text-[10px] font-black tracking-widest transition-all cursor-pointer ${
                 filterStatus === status
                   ? "bg-white shadow-sm text-black"
                   : "text-gray-400 hover:text-gray-600"
@@ -140,7 +140,7 @@ export const OrderList = () => {
                         onClick={() =>
                           setSelectedSlipUrl(order.slipUrl || null)
                         } // 👈 กดแล้วเก็บ URL ลง State
-                        className="inline-flex items-center justify-center w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm group-hover:scale-110"
+                        className="inline-flex items-center justify-center w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm group-hover:scale-110 cursor-pointer"
                         title="คลิกเพื่อดูสลิป"
                       >
                         <svg

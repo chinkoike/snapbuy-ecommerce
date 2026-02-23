@@ -37,7 +37,9 @@ export const ProductPage = () => {
                 }
           }
           className={`${
-            showForm ? "bg-gray-200 text-gray-700" : "bg-black text-white"
+            showForm
+              ? "bg-gray-200 text-gray-700"
+              : "bg-black hover:bg-gray-700 text-white"
           } px-6 py-2.5 rounded-xl font-bold transition-all shadow-md`}
         >
           {showForm ? "Close" : "+ Add Product"}

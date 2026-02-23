@@ -2,6 +2,7 @@ import express from "express";
 import { checkJwt, requireAdmin } from "../middleware/auth.js";
 import {
   adminUpdateOrderStatus,
+  cancelOrder,
   createOrder,
   getAllOrders,
   getMyOrders,
@@ -14,8 +15,9 @@ const router = express.Router();
 router.get("/user/order/my", checkJwt, getMyOrders);
 router.get("/user/order/:id", checkJwt, getOrderById);
 router.post("/user/order", checkJwt, createOrder);
+router.patch("/user/order/:id/cancel", checkJwt, cancelOrder);
 router.patch(
-  "/:id/upload-slip",
+  "/user/:id/upload-slip",
   checkJwt,
   uploadCloud.single("slip"),
   uploadSlip,

@@ -1,12 +1,30 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import type { OrderListProps } from "../../../../shared/types/order";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useOrderStore } from "../../store/useOrderStore";
 
 export const OrderList: React.FC<OrderListProps> = ({
   myOrders,
   isLoading,
   onSelectOrder,
 }) => {
+  const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
+  const { getAccessTokenSilently } = useAuth0();
+  const { cancelOrder, loading } = useOrderStore();
+  const handleConfirmCancel = async () => {
+    if (!orderToCancel) return;
+
+    try {
+      const token = await getAccessTokenSilently();
+      await cancelOrder(orderToCancel, token);
+      setOrderToCancel(null); // ปิด Modal เมื่อสำเร็จ
+      // toast.success("Cancelled successfully!");
+    } catch (err) {
+      console.error(err);
+      // toast.error("Failed to cancel");
+    }
+  };
   if (isLoading) {
     return (
       <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden animate-pulse">
@@ -48,7 +66,7 @@ export const OrderList: React.FC<OrderListProps> = ({
             NO ORDER
           </div>
         ) : (
-          myOrders.slice(0, 5).map((order) => (
+          myOrders.map((order) => (
             <div
               key={order.id}
               onClick={() => onSelectOrder(order)}
@@ -86,8 +104,58 @@ export const OrderList: React.FC<OrderListProps> = ({
                       ? "WAITING"
                       : order.status}
                   </span>
+                  {/*ปุ่ม Cancel Order: โชว์เฉพาะตอนยังไม่ส่ง Slip และยังไม่จ่าย */}
+                  {order.status === "PENDING" && !order.slipUrl && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // ✋ หยุดการคลิกไม่ให้ส่งไปถึงตัว div หลัก
+                        if (window.confirm("ยืนยันการยกเลิกออเดอร์นี้?")) {
+                          // handleCancel(order.id); // เรียกฟังก์ชันยกเลิกจาก store ของคุณ
+                          console.log("Cancelling order:", order.id);
+                        }
+                      }}
+                      className="text-[10px] px-3 py-1 rounded-lg font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-all border border-red-100"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  {/* 🛡️ Cancel Confirmation Modal */}
+                  {orderToCancel && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                      <div className="bg-white rounded-4xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            ⚠️
+                          </div>
+                          <h3 className="text-xl font-black text-gray-900 mb-2">
+                            Cancel Order?
+                          </h3>
+                          <p className="text-gray-500 text-sm font-medium mb-8 leading-relaxed">
+                            Are you sure? The items will be returned to stock
+                            immediately. This action cannot be undone.
+                          </p>
+                        </div>
 
-                  {/* ✅ Logic เปลี่ยนปุ่ม: ถ้าจ่ายแล้ว (PAID) ไม่ต้องโชว์อะไรเลย */}
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => setOrderToCancel(null)}
+                            className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-400 hover:bg-gray-50 transition-colors"
+                            disabled={loading}
+                          >
+                            No, keep it
+                          </button>
+                          <button
+                            onClick={handleConfirmCancel}
+                            disabled={loading}
+                            className="flex-1 px-6 py-3 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-200 transition-all disabled:bg-gray-300"
+                          >
+                            {loading ? "..." : "Yes, Cancel"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* ✅ Logic เปลี่ยนปุ่ม: ถ้าจ่ายแล้ว (PAID) ไม่ต้องโชว์อะไร */}
                   {order.status !== "PAID" && (
                     <Link
                       to={`/order-success/${order.id}`}

@@ -40,15 +40,29 @@ export const orderService = {
     const formData = new FormData();
     formData.append("slip", file); // ชื่อ "slip" ต้องตรงกับ Backend
 
-    const response = await api.patch(`/api/${orderId}/upload-slip`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
+    const response = await api.patch(
+      `/api/user/${orderId}/upload-slip`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     return response.data;
   },
+
+  cancelOrder: async (orderId: string, token: string) => {
+    const res = await api.patch(
+      `/api/user/order/${orderId}/cancel`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    return res.data;
+  },
+
   // อัปเดตสถานะออเดอร์
   updateStatus: async (
     orderId: string,

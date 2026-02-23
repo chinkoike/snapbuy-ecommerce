@@ -3,29 +3,6 @@ import { prisma } from "../lib/prisma.js";
 import type { CreateOrderDto, OrderData } from "../../../shared/types/order.js";
 import type { Prisma } from "@prisma/client";
 
-export const getAllOrders = async (req: Request, res: Response) => {
-  try {
-    // ระบุ <OrderData[]> เพื่อบอก Prisma ว่าเราคาดหวังผลลัพธ์แบบไหน
-    // หรือปล่อยให้มันเป็น Default แล้วไป Cast ตอนส่ง Response
-    const orders = await prisma.order.findMany({
-      include: {
-        user: true,
-        items: {
-          include: {
-            product: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    // ใช้ความสามารถของ Express ในการระบุ Type ของสิ่งที่ส่งออกไป
-    return res.status(200).json(orders as OrderData[]);
-  } catch (error) {
-    console.error("Get All Orders Error:", error);
-    return res.status(500).json({ error: "Server error" });
-  }
-};
 export const getMyOrders = async (req: Request, res: Response) => {
   try {
     // 1. ดึง Auth0 ID จาก Token (Middleware: express-oauth2-jwt-bearer)
@@ -104,8 +81,8 @@ export const getOrderById = async (req: Request, res: Response) => {
 };
 export const createOrder = async (req: Request, res: Response) => {
   try {
-    const auth0Sub = req.auth?.payload.sub;
-    if (!auth0Sub) {
+    const auth0Id = req.auth?.payload.sub;
+    if (!auth0Id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     const {
@@ -115,7 +92,7 @@ export const createOrder = async (req: Request, res: Response) => {
       paymentMethod,
     }: CreateOrderDto = req.body;
     const user = await prisma.user.findUnique({
-      where: { auth0Id: auth0Sub },
+      where: { auth0Id: auth0Id },
     });
     if (!user) {
       return res.status(404).json({
@@ -173,6 +150,107 @@ export const createOrder = async (req: Request, res: Response) => {
     res.status(400).json({ message });
   }
 };
+
+export const cancelOrder = async (req: Request, res: Response) => {
+  const { id } = req.params; // order id
+  const auth0Id = req.auth?.payload?.sub; // ดึง sub จาก Auth0 payload
+
+  if (!auth0Id) {
+    return res.status(401).json({ message: "Unauthorized: No sub found" });
+  }
+
+  try {
+    // 1. หา User ใน DB ของเราด้วย auth0Id (sub)
+    const user = await prisma.user.findUnique({
+      where: { auth0Id: auth0Id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found in database" });
+    }
+
+    // 2. หา Order ที่ตรงกับ ID และเป็นของ User คนนี้ + สถานะต้องเป็น PENDING
+    const order = await prisma.order.findFirst({
+      where: {
+        id: id as string,
+        userId: user.id, // ใช้ ID จากการหาในขั้นตอนที่ 1
+        status: "PENDING",
+      },
+      include: { items: true }, // ดึงสินค้าในออเดอร์มาเพื่อคืนสต็อก
+    });
+
+    if (!order) {
+      return res
+        .status(404)
+        .json({ message: "ไม่พบออเดอร์ที่สามารถยกเลิกได้" });
+    }
+
+    // 3. เริ่มกระบวนการ Transaction (ต้องสำเร็จทั้งหมด หรือไม่สำเร็จเลย)
+    await prisma.$transaction(async (tx) => {
+      // A. อัปเดตสถานะออเดอร์เป็น CANCELLED
+      await tx.order.update({
+        where: { id: id as string },
+        data: { status: "CANCELLED" },
+      });
+
+      // B. วนลูปคืนสต็อกสินค้าตามจำนวนที่สั่ง
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: { increment: item.quantity }, // เพิ่มค่าสต็อกกลับเข้าไป
+          },
+        });
+      }
+    });
+
+    res.json({ message: "ยกเลิกออเดอร์สำเร็จ สต็อกถูกคืนเข้าระบบแล้ว" });
+  } catch (error: unknown) {
+    console.error("Cancel Order Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const uploadSlip = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // เมื่อใช้ multer-storage-cloudinary ไฟล์จะถูกอัปโหลดอัตโนมัติ
+    // และ URL จะอยู่ที่ req.file.path (หรือ req.file.secure_url ขึ้นอยู่กับ version)
+    const file = req.file as any;
+
+    if (!file) {
+      return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพสลิป" });
+    }
+
+    // 1. ดึง URL จาก Cloudinary ที่ Multer เตรียมไว้ให้
+    // ปกติจะเป็น file.path หรือ file.secure_url
+    const imageUrl = file.path || file.secure_url;
+
+    // 2. บันทึก URL ลง Database และเปลี่ยนสถานะ
+    const updatedOrder = await prisma.order.update({
+      where: { id: id as string },
+      data: {
+        slipUrl: imageUrl,
+        status: "PENDING", // เปลี่ยนสถานะให้ Admin เห็นในหน้า Dashboard
+      },
+    });
+
+    return res.status(200).json({
+      message: "อัปโหลดสลิปสำเร็จ แอดมินจะรีบตรวจสอบรายการของคุณ",
+      url: imageUrl,
+      order: updatedOrder,
+    });
+  } catch (error: any) {
+    console.error("Controller Error:", error);
+    return res.status(500).json({
+      message: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
+      error: error.message,
+    });
+  }
+};
+
+//-------------------admin----------------------------------//
 export const adminUpdateOrderStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -213,41 +291,27 @@ export const adminUpdateOrderStatus = async (req: Request, res: Response) => {
     });
   }
 };
-export const uploadSlip = async (req: Request, res: Response) => {
+
+export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-
-    // เมื่อใช้ multer-storage-cloudinary ไฟล์จะถูกอัปโหลดอัตโนมัติ
-    // และ URL จะอยู่ที่ req.file.path (หรือ req.file.secure_url ขึ้นอยู่กับ version)
-    const file = req.file as any;
-
-    if (!file) {
-      return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพสลิป" });
-    }
-
-    // 1. ดึง URL จาก Cloudinary ที่ Multer เตรียมไว้ให้
-    // ปกติจะเป็น file.path หรือ file.secure_url
-    const imageUrl = file.path || file.secure_url;
-
-    // 2. บันทึก URL ลง Database และเปลี่ยนสถานะ
-    const updatedOrder = await prisma.order.update({
-      where: { id: id as string },
-      data: {
-        slipUrl: imageUrl,
-        status: "PENDING", // เปลี่ยนสถานะให้ Admin เห็นในหน้า Dashboard
+    // ระบุ <OrderData[]> เพื่อบอก Prisma ว่าเราคาดหวังผลลัพธ์แบบไหน
+    // หรือปล่อยให้มันเป็น Default แล้วไป Cast ตอนส่ง Response
+    const orders = await prisma.order.findMany({
+      include: {
+        user: true,
+        items: {
+          include: {
+            product: true,
+          },
+        },
       },
+      orderBy: { createdAt: "desc" },
     });
 
-    return res.status(200).json({
-      message: "อัปโหลดสลิปสำเร็จ แอดมินจะรีบตรวจสอบรายการของคุณ",
-      url: imageUrl,
-      order: updatedOrder,
-    });
-  } catch (error: any) {
-    console.error("Controller Error:", error);
-    return res.status(500).json({
-      message: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
-      error: error.message,
-    });
+    // ใช้ความสามารถของ Express ในการระบุ Type ของสิ่งที่ส่งออกไป
+    return res.status(200).json(orders as OrderData[]);
+  } catch (error) {
+    console.error("Get All Orders Error:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 };

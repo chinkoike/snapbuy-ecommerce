@@ -66,6 +66,10 @@ export interface OrderStore {
     token: string,
   ) => Promise<OrderData | null>;
   uploadSlip: (orderId: string, file: File, token: string) => Promise<boolean>;
+  cancelOrder: (
+    orderId: string,
+    token: string,
+  ) => Promise<{ success: boolean }>;
 }
 export interface OrderListProps {
   myOrders: OrderData[];

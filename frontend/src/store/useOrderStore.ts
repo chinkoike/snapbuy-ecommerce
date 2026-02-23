@@ -96,7 +96,24 @@ export const useOrderStore = create<OrderStore>((set) => ({
       return false;
     }
   },
+  cancelOrder: async (orderId: string, token: string) => {
+    set({ loading: true });
+    try {
+      await orderService.cancelOrder(orderId, token);
 
+      // อัปเดต State ในเครื่องทันทีไม่ต้องโหลดใหม่ (Optimistic Update)
+      set((state) => ({
+        myOrders: state.orders.map((order) =>
+          order.id === orderId ? { ...order, status: "CANCELLED" } : order,
+        ),
+        loading: false,
+      }));
+      return { success: true };
+    } catch (error) {
+      set({ loading: false });
+      throw error;
+    }
+  },
   // --- Admin Side ---
   fetchOrders: async (token: string) => {
     set({ loading: true, error: null });

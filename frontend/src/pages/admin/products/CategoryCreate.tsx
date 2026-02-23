@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useCategoryStore } from "../../../store/useCategoryStore";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const CategoryCreate = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [name, setName] = useState("");
   const [status, setStatus] = useState<{
     type: "success" | "error" | null;
@@ -19,7 +21,8 @@ export const CategoryCreate = () => {
     setStatus({ type: null, msg: "" }); // Reset status
 
     try {
-      await addCategory(name);
+      const token = await getAccessTokenSilently();
+      await addCategory(name, token);
       setName("");
       setStatus({ type: "success", msg: "สร้างหมวดหมู่สำเร็จแล้ว!" });
 
@@ -52,7 +55,7 @@ export const CategoryCreate = () => {
         <button
           type="submit"
           disabled={loading || !name.trim()}
-          className="bg-black hover:bg-gray-600 text-white px-6 py-2 rounded-xl font-medium  disabled:bg-gray-400 transition-colors"
+          className="bg-black hover:bg-gray-600 text-white px-6 py-2 rounded-xl font-medium  disabled:bg-gray-400 focus:cursor-pointer transition-colors"
         >
           {loading ? "Adding..." : "Add"}
         </button>
