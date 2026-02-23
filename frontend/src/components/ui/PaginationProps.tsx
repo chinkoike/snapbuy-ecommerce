@@ -1,5 +1,5 @@
 // frontend/src/components/Pagination.tsx
-import type { PaginationProps } from "../../../shared/types/product";
+import type { PaginationProps } from "../../../../shared/types/product";
 import React from "react";
 
 export const Pagination: React.FC<PaginationProps> = ({

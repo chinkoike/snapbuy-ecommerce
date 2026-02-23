@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useProductStore } from "../../../store/useProductStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { ProductData } from "../../../shared/types/product";
+import type { ProductData } from "../../../../../shared/types/product";
 
 interface ProductListProps {
   onEdit: (product: ProductData) => void;

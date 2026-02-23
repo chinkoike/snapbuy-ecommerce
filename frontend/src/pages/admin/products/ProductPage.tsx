@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { ProductForm } from "./ProductForm";
 import { ProductList } from "./ProductList";
-import type { ProductData } from "../../../shared/types/product";
+import type { ProductData } from "../../../../../shared/types/product";
+import { CategoryCreate } from "./CategoryCreate";
 
 export const ProductPage = () => {
   const [showForm, setShowForm] = useState(false);
@@ -57,7 +58,7 @@ export const ProductPage = () => {
             }}
           />
         )}
-
+        <CategoryCreate />
         <ProductList onEdit={handleEditRequest} />
       </div>
     </div>

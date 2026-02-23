@@ -5,11 +5,11 @@ import {
   getCategories,
   createCategory,
 } from "../controller/category.controller.js";
-import { requireAdmin } from "../middleware/auth.js";
+import { checkJwt, requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
 router.get("/categories", getCategories);
-router.post("/admin/categories", requireAdmin, createCategory);
+router.post("/admin/categories", checkJwt, requireAdmin, createCategory);
 
 export default router;

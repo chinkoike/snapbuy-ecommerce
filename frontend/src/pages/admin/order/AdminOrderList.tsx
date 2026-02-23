@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOrderStore } from "../../../store/useOrderStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { OrderData, OrderStatus } from "../../../shared/types/order";
+import type { OrderData, OrderStatus } from "../../../../../shared/types/order";
 
 export const OrderList = () => {
   const { getAccessTokenSilently } = useAuth0();

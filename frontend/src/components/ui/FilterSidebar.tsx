@@ -1,5 +1,5 @@
 // frontend/src/components/FilterSidebar.tsx
-import type { FilterSidebarProps } from "../../../shared/types/product";
+import type { FilterSidebarProps } from "../../../../shared/types/product";
 import React from "react";
 
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({

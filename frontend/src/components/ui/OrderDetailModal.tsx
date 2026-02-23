@@ -1,4 +1,4 @@
-import type { OrderDetailModalProps } from "../../../shared/types/order";
+import type { OrderDetailModalProps } from "../../../../shared/types/order";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 

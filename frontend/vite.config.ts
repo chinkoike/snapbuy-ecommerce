@@ -5,9 +5,5 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  server: {
-    proxy: {
-      "/api": "http://localhost:4000",
-    },
-  },
+  // ไม่ต้องมี server: { proxy: ... } แล้วครับ
 });

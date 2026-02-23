@@ -82,6 +82,7 @@ export interface CategoryStore {
   loading: boolean;
   error: string | null;
   fetchCategories: () => Promise<void>;
+  addCategory: (name: string) => Promise<void>;
 }
 // src/shared/types/product.ts
 

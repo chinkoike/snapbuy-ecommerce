@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import cors from "cors";
@@ -8,7 +9,6 @@ import productRouter from "./routes/product.js";
 import categoryRouter from "./routes/category.js";
 import orderRouter from "./routes/order.js";
 import adminRouter from "./routes/admin.js";
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -16,15 +16,15 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://snapbuy-ecommerce-live.vercel.app/",
     credentials: true,
   }),
 );
 app.use(express.json());
 
-// Log request (สะดวกต่อการ debug)
+// Log request (debug)
 app.use((req, _res, next) => {
-  console.log("INCOMING:", req.method, req.url);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
@@ -49,5 +49,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 // Start Server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server is barking on port ${PORT}`);
 });
