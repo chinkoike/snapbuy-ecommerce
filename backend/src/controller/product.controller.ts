@@ -165,8 +165,6 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   const id = req.params.id as string;
   const rawBody: Partial<ProductData> = req.body;
-
-  // 1. ดึงไฟล์รูปภาพ (ถ้ามีการอัปโหลดใหม่เข้ามา)
   const file = req.file as any;
 
   try {
@@ -180,27 +178,31 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     const dataToUpdate: any = {};
 
-    // จัดการข้อมูลทั่วไป
-    if (rawBody.name !== undefined) dataToUpdate.name = rawBody.name;
+    // ✅ ใช้การเช็คแบบระมัดระวังขึ้น: ต้องมีค่าและไม่เป็น string ว่าง
+    if (rawBody.name) dataToUpdate.name = rawBody.name;
     if (rawBody.description !== undefined)
       dataToUpdate.description = rawBody.description;
-    if (rawBody.price !== undefined) dataToUpdate.price = Number(rawBody.price);
-    if (rawBody.stock !== undefined) dataToUpdate.stock = Number(rawBody.stock);
 
-    // 2. Logic การอัปเดตรูปภาพ
+    // ✅ ตรวจสอบตัวเลขให้ชัวร์
+    if (rawBody.price !== undefined && String(rawBody.price) !== "") {
+      const p = Number(rawBody.price);
+      if (!isNaN(p)) dataToUpdate.price = p;
+    }
+
+    // สำหรับ Stock
+    if (rawBody.stock !== undefined && String(rawBody.stock) !== "") {
+      const s = Number(rawBody.stock);
+      if (!isNaN(s)) dataToUpdate.stock = s;
+    }
+    // จัดการรูปภาพ
     if (file) {
-      // ถ้ามีการส่งไฟล์ใหม่มา ให้ใช้ URL จาก Cloudinary
       dataToUpdate.imageUrl = file.path || file.secure_url;
-
-      // OPTIONAL: ถ้าอยากลบรูปเก่าใน Cloudinary ต้องใช้ public_id ในการสั่งลบ
-      // แต่เบื้องต้นเขียนทับ imageUrl ใน DB แบบนี้ก็ทำงานได้แล้วครับ
-    } else if (rawBody.imageUrl !== undefined) {
-      // ถ้าไม่มีไฟล์ แต่มีการส่ง imageUrl มา (เช่น ส่ง string เดิมกลับมา)
+    } else if (rawBody.imageUrl) {
       dataToUpdate.imageUrl = rawBody.imageUrl;
     }
 
-    // 3. เช็ค Category เหมือนเดิม
-    if (rawBody.categoryId !== undefined) {
+    // ✅ เช็ค CategoryId (ต้องไม่เป็นค่าว่าง)
+    if (rawBody.categoryId && rawBody.categoryId !== "") {
       const categoryExists = await prisma.category.findUnique({
         where: { id: rawBody.categoryId },
       });
@@ -219,8 +221,12 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     res.json(updatedProduct);
   } catch (error) {
-    console.error("Update Product Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    // 💡 Debug สำคัญ: พิมพ์ error ออกมาดูใน Render Logs
+    console.error("DEBUG - Prisma Update Error:", error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };
 
