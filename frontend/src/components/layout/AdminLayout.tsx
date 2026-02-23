@@ -22,7 +22,7 @@ export const AdminLayout = () => {
       {/* 📱 Mobile Overlay - ปรับเป็นสีดำเข้ม backdrop-blur */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/80 z-[60] lg:hidden backdrop-blur-sm animate-in fade-in duration-300"
+          className="fixed inset-0 bg-black/80 z-60 lg:hidden backdrop-blur-sm animate-in fade-in duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -30,7 +30,7 @@ export const AdminLayout = () => {
       {/* Sidebar - เปลี่ยนเป็นธีมเข้ม (Dark Sidebar) เพื่อแยกความต่างจากหน้า User */}
       <aside
         className={`
-    fixed inset-y-0 left-0 z-[70] w-72 bg-black text-white transition-transform duration-500 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+    fixed inset-y-0 left-0 z-70 w-72 bg-black text-white transition-transform duration-500 ease-in-out lg:translate-x-0 lg:static lg:inset-0
     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
   `}
       >

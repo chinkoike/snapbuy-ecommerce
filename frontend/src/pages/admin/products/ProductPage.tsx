@@ -23,10 +23,19 @@ export const ProductPage = () => {
   };
 
   return (
-    <div className="p-8 shadow-xl border border-gray-100 overflow-hidden bg-gray-50 min-h-screen space-y-6">
-      {/* ... ส่วน Header เหมือนเดิม ... */}
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* เปลี่ยนปุ่ม Add Product ให้เรียก handleAddNew (ถ้ามี) หรือ set ให้เป็น null เสมอ */}
+    <div className="p-8 md:p-12 bg-[#fafafa] min-h-screen space-y-12 animate-in fade-in duration-700">
+      {/* --- Top Navigation & Header Area --- */}
+      <div className="max-w-400 mx-auto flex flex-col md:flex-row justify-between items-end gap-6 border-b-2 border-black pb-8">
+        <div className="space-y-1">
+          <h1 className="text-5xl font-black tracking-tighter uppercase italic text-black">
+            Inventory_Vault
+          </h1>
+          <p className="text-[10px] font-black text-zinc-400 tracking-[0.5em] uppercase">
+            Centralized_Product_Control_Unit
+          </p>
+        </div>
+
+        {/* Toggle Button: เปลี่ยนจาก Rounded เป็น Solid Square Style */}
         <button
           onClick={
             showForm
@@ -36,32 +45,63 @@ export const ProductPage = () => {
                   setShowForm(true);
                 }
           }
-          className={`${
+          className={`px-10 py-4 text-[11px] font-black uppercase tracking-[0.3em] transition-all cursor-pointer shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 ${
             showForm
-              ? "bg-gray-200 text-gray-700"
-              : "bg-black hover:bg-gray-700 text-white"
-          } px-6 py-2.5 rounded-xl font-bold transition-all shadow-md`}
+              ? "bg-white text-zinc-400 border border-zinc-200 shadow-none translate-x-0.5 ranslate-y-0.5"
+              : "bg-black text-white border border-black hover:bg-zinc-800"
+          }`}
         >
-          {showForm ? "Close" : "+ Add Product"}
+          {showForm ? "✕ Close_Entry" : "+ Initiate_New_Product"}
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto space-y-8">
+      {/* --- Main Content Area --- */}
+      <div className="max-w-400 mx-auto space-y-16">
+        {/* Product Form Section */}
         {showForm && (
-          <ProductForm
-            // ✨ หัวใจสำคัญ: เมื่อ key เปลี่ยน React จะทำลายคอมโพเนนต์เก่าและสร้างใหม่
-            // ทำให้ useState ใน ProductForm รับค่าจาก initialData ใหม่ทันทีโดยไม่ Error
-            key={editingProduct?.id || "new-product"}
-            initialData={editingProduct}
-            onClose={handleCloseForm}
-            onSuccess={() => {
-              handleCloseForm();
-              // fetchProducts(); // เรียกผ่าน store โดยตรงใน ProductList อยู่แล้ว
-            }}
-          />
+          <div className="animate-in slide-in-from-top-4 duration-500">
+            <ProductForm
+              key={editingProduct?.id || "new-product"}
+              initialData={editingProduct}
+              onClose={handleCloseForm}
+              onSuccess={() => {
+                handleCloseForm();
+              }}
+            />
+          </div>
         )}
-        <CategoryCreate />
-        <ProductList onEdit={handleEditRequest} />
+
+        {/* Section: Category Management */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="h-0.5 w-8 bg-black"></div>
+            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-black">
+              Categorization_Tools
+            </h2>
+          </div>
+          <CategoryCreate />
+        </div>
+
+        {/* Section: Product Database Table */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <div className="h-0.5 w-8 bg-black"></div>
+            <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-black">
+              Active_Product_Registry
+            </h2>
+          </div>
+          <ProductList onEdit={handleEditRequest} />
+        </div>
+      </div>
+
+      {/* Footer Decoration */}
+      <div className="max-w-400 mx-auto pt-20 pb-10 flex justify-between items-center opacity-20 border-t border-zinc-200">
+        <p className="text-[9px] font-black tracking-widest uppercase">
+          Admin_Terminal_V2
+        </p>
+        <p className="text-[9px] font-black tracking-widest uppercase">
+          © 2026 Internal_System
+        </p>
       </div>
     </div>
   );

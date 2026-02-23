@@ -1,8 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Lock, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const { loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const nav = useNavigate();
+  if (isAuthenticated) {
+    nav("/");
+  }
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 bg-white text-black">

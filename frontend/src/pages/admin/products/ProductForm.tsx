@@ -3,7 +3,7 @@ import { useProductStore } from "../../../store/useProductStore";
 import { useCategoryStore } from "../../../store/useCategoryStore";
 import { useAuth0 } from "@auth0/auth0-react";
 import type { ProductFormProps } from "../../../../../shared/types/product";
-import { X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 export const ProductForm = ({
   initialData,
   onSuccess,
@@ -45,32 +45,38 @@ export const ProductForm = ({
 
   return (
     // Backdrop สำหรับ Popup
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
       {/* Modal Container */}
-      <div className="bg-white w-full max-w-lg rounded-none shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-        {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h3 className="text-lg font-black uppercase tracking-widest">
-            {initialData ? "Edit Product" : "New Collection"}
-          </h3>
+      <div className="bg-white w-full max-w-lg border border-black shadow-[20px_20px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 duration-200">
+        {/* Header - ปรับให้ดูเป็น Label ระบบ */}
+        <div className="flex justify-between items-center p-8 border-b border-zinc-100 bg-zinc-50">
+          <div className="space-y-1">
+            <p className="text-[9px] font-black text-zinc-400 tracking-[0.4em] uppercase">
+              Inventory_Update
+            </p>
+            <h3 className="text-2xl font-black uppercase tracking-tighter italic text-black">
+              {initialData ? "Edit_Product" : "New_Collection"}
+            </h3>
+          </div>
           <button
             onClick={onClose}
-            className="hover:rotate-90 transition-transform duration-200"
+            className="w-10 h-10 flex items-center justify-center border border-transparent hover:border-black hover:rotate-90 transition-all duration-300 cursor-pointer"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">
-                Product Name
+        <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-white">
+          <div className="space-y-6">
+            {/* Input: Product Name */}
+            <div className="group">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
+                Product_Identity
               </label>
               <input
-                className="w-full border-b border-gray-200 p-2 focus:border-black outline-none transition-colors"
-                placeholder="Enter name..."
+                className="w-full border-b-2 border-zinc-100 py-3 text-sm font-bold uppercase tracking-widest focus:border-black outline-none transition-all placeholder:text-zinc-200"
+                placeholder="NAME_REQUIRED..."
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -79,14 +85,16 @@ export const ProductForm = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-8">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">
-                  Price (THB)
+            {/* Grid: Price & Stock */}
+            <div className="grid grid-cols-2 gap-10">
+              <div className="group">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
+                  Value_THB
                 </label>
                 <input
-                  className="w-full border-b border-gray-200 p-2 focus:border-black outline-none transition-colors"
+                  className="w-full border-b-2 border-zinc-100 py-3 text-sm font-black focus:border-black outline-none transition-all"
                   type="number"
+                  placeholder="0.00"
                   value={formData.price}
                   onChange={(e) =>
                     setFormData({ ...formData, price: e.target.value })
@@ -94,13 +102,14 @@ export const ProductForm = ({
                   required
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">
-                  Quantity
+              <div className="group">
+                <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
+                  Inventory_Qty
                 </label>
                 <input
-                  className="w-full border-b border-gray-200 p-2 focus:border-black outline-none transition-colors"
+                  className="w-full border-b-2 border-zinc-100 py-3 text-sm font-black focus:border-black outline-none transition-all"
                   type="number"
+                  placeholder="0"
                   value={formData.stock}
                   onChange={(e) =>
                     setFormData({ ...formData, stock: e.target.value })
@@ -110,33 +119,41 @@ export const ProductForm = ({
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">
-                Category Selection
+            {/* Select: Category */}
+            <div className="group">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
+                Classification
               </label>
-              <select
-                className="w-full border-b border-gray-200 p-2 focus:border-black outline-none bg-transparent transition-colors"
-                value={formData.categoryId}
-                onChange={(e) =>
-                  setFormData({ ...formData, categoryId: e.target.value })
-                }
-                required
-              >
-                <option value="">Choose category</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  className="w-full border-b-2 border-zinc-100 py-3 text-[11px] font-black uppercase tracking-widest focus:border-black outline-none bg-transparent appearance-none transition-all cursor-pointer"
+                  value={formData.categoryId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, categoryId: e.target.value })
+                  }
+                  required
+                >
+                  <option value="">SELECT_CATEGORY</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-0 bottom-3 pointer-events-none text-zinc-300">
+                  <ChevronDown size={14} />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-tighter text-gray-400">
-                Image URL
+            {/* Input: Image URL */}
+            <div className="group">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
+                Visual_Asset_URL
               </label>
               <input
-                className="w-full border-b border-gray-200 p-2 focus:border-black outline-none transition-colors"
+                className="w-full border-b-2 border-zinc-100 py-3 text-[10px] font-medium focus:border-black outline-none transition-all placeholder:text-zinc-200"
+                placeholder="HTTPS://IMAGE_RESOURCE_LINK..."
                 value={formData.imageUrl}
                 onChange={(e) =>
                   setFormData({ ...formData, imageUrl: e.target.value })
@@ -146,24 +163,24 @@ export const ProductForm = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-6 flex gap-4">
+          <div className="pt-4 flex flex-col sm:flex-row gap-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 border border-black py-4 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-gray-50 transition"
+              className="flex-1 px-8 py-5 border border-zinc-200 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-zinc-50 hover:border-black transition-all cursor-pointer"
             >
-              Cancel
+              Discard
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-black text-white py-4 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-gray-800 disabled:bg-gray-400 transition"
+              className="flex-1 px-8 py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-zinc-800 disabled:bg-zinc-300 transition-all cursor-pointer shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] active:shadow-none"
             >
               {loading
-                ? "Syncing..."
+                ? "System_Syncing..."
                 : initialData
-                  ? "Update Item"
-                  : "Create Item"}
+                  ? "Commit_Changes"
+                  : "Push_To_Cloud"}
             </button>
           </div>
         </form>

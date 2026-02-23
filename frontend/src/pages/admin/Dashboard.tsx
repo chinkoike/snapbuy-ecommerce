@@ -47,93 +47,126 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="p-4 md:p-8 space-y-6 md:space-y-10 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl md:text-4xl font-black tracking-tighter uppercase">
-        Overview
-      </h1>
+    <div className="p-4 md:p-12 space-y-8 md:space-y-16 bg-[#fafafa] min-h-screen animate-in fade-in duration-700">
+      {/* --- Dashboard Header --- */}
+      <div className="max-w-400 mx-auto border-b-2 border-black pb-8">
+        <p className="text-[10px] font-black text-zinc-400 tracking-[0.5em] uppercase mb-2">
+          System_Status
+        </p>
+        <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-black">
+          Overview_Control
+        </h1>
+      </div>
 
-      {/* Stats Cards: Responsive Grid */}
-      <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+      {/* --- Stats Cards: Modern Minimalist Grid --- */}
+      <div className="max-w-400 mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
         {cards.map((card, i) => (
           <div
             key={i}
-            className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-6 md:p-8 flex justify-between items-end hover:border-black transition-colors"
+            className="bg-white border border-black p-8 flex justify-between items-start hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,0.05)] transition-all group relative overflow-hidden"
           >
-            <div>
-              <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
-                {card.label}
+            <div className="relative z-10">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-4 group-hover:text-black transition-colors">
+                {card.label.replace(" ", "_")}
               </p>
-              <p className="text-2xl md:text-3xl font-black">{card.value}</p>
+              <p className="text-4xl md:text-5xl font-black tracking-tighter text-black">
+                {card.value}
+              </p>
             </div>
+
+            {/* Icon Container: เปลี่ยนเป็นทรงเหลี่ยมคลาสสิก */}
             <div
-              className={`w-10 h-10 md:w-12 md:h-12 ${card.color} text-white flex items-center justify-center text-lg md:text-xl shadow-lg`}
+              className={`w-12 h-12 md:w-16 md:h-16 border-2 border-black flex items-center justify-center text-xl md:text-2xl transition-transform group-hover:-rotate-12 ${card.color.replace("bg-", "text-")} bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}
             >
               {card.icon}
             </div>
+
+            {/* ตกแต่งพื้นหลังเล็กน้อยแบบ Technical Line */}
+            <div className="absolute right-0 bottom-0 w-24 h-px bg-zinc-100 group-hover:bg-black transition-colors"></div>
           </div>
         ))}
       </div>
 
-      {/* Recent Members Section */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-        <div className="p-4 md:p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <h3 className="font-bold uppercase text-[10px] md:text-xs tracking-widest">
-            Recent Members
-          </h3>
-          <span className="text-[9px] md:text-[10px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded">
-            NEW REGISTRATIONS
-          </span>
-        </div>
+      {/* --- Recent Members Section --- */}
+      <div className="max-w-400 mx-auto">
+        <div className="bg-white border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.03)]">
+          {/* Table Header Area */}
+          <div className="p-6 md:p-8 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 bg-zinc-50/50">
+            <div className="space-y-1">
+              <h3 className="font-black uppercase text-xs md:text-sm tracking-[0.3em] text-black italic">
+                Recent_Member_Logs
+              </h3>
+              <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">
+                Live_User_Authentication_Feed
+              </p>
+            </div>
+            <span className="text-[10px] font-black text-white bg-black px-4 py-1.5 tracking-widest uppercase italic shadow-[4px_4px_0px_0px_rgba(16,185,129,0.5)]">
+              Sync_Active
+            </span>
+          </div>
 
-        {/* ✨ Responsive Table Wrap */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-150">
-            <thead>
-              <tr className="text-[9px] md:text-[10px] uppercase tracking-widest text-gray-400 bg-gray-50/50">
-                <th className="p-4 font-bold border-b border-gray-100">
-                  Email
-                </th>
-                <th className="p-4 font-bold border-b border-gray-100">Role</th>
-                <th className="p-4 font-bold border-b border-gray-100">
-                  Joined
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-xs md:text-sm font-medium">
-              {stats.users.recent.map((user) => (
-                <tr
-                  key={user.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="p-4 whitespace-nowrap">{user.email}</td>
-                  <td className="p-4">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-bold uppercase ${
-                        user.role === "ADMIN"
-                          ? "bg-black text-white"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="p-4 text-gray-400 whitespace-nowrap">
-                    {new Date(user.createdAt).toLocaleDateString("th-TH", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
+          {/* ✨ Responsive Table Wrap */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-150">
+              <thead>
+                <tr className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 bg-white border-b border-zinc-100">
+                  <th className="p-8 font-black">User_Identity</th>
+                  <th className="p-8 font-black text-center">
+                    Privilege_Level
+                  </th>
+                  <th className="p-8 font-black text-right">
+                    Registration_Date
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="text-[11px] md:text-xs font-bold uppercase tracking-tight">
+                {stats.users.recent.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="hover:bg-zinc-50 transition-colors group border-b border-zinc-50 last:border-0"
+                  >
+                    <td className="p-8 whitespace-nowrap text-black font-black italic">
+                      {user.email}
+                    </td>
+                    <td className="p-8 text-center">
+                      <span
+                        className={`px-4 py-1.5 border text-[9px] font-black tracking-[0.2em] ${
+                          user.role === "ADMIN"
+                            ? "bg-black text-white border-black"
+                            : "bg-white text-zinc-400 border-zinc-200"
+                        }`}
+                      >
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="p-8 text-zinc-400 text-right font-mono tracking-widest">
+                      {new Date(user.createdAt).toLocaleDateString("th-TH", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Mobile-only hint */}
-        <div className="sm:hidden p-3 text-center border-t border-gray-50 text-[10px] text-gray-300 italic">
-          Swipe horizontally to view full table
+          {/* Mobile-only hint: ปรับให้ดูเป็น System Warning */}
+          <div className="sm:hidden p-4 text-center border-t border-zinc-100 text-[9px] text-zinc-400 font-black tracking-widest uppercase bg-zinc-50">
+            [ ! ] Swipe_Horizontal_To_Expand_Data
+          </div>
         </div>
+      </div>
+
+      {/* Footer Decoration */}
+      <div className="max-w-400 mx-auto pt-10 pb-10 flex justify-between items-center opacity-10 border-t border-black">
+        <p className="text-[9px] font-black tracking-widest uppercase">
+          Admin_Core_v2.0
+        </p>
+        <p className="text-[9px] font-black tracking-widest uppercase">
+          Encryption_Active
+        </p>
       </div>
     </div>
   );
