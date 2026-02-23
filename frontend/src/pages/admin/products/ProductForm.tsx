@@ -16,6 +16,7 @@ export const ProductForm = ({
 
   // 1. เพิ่ม State สำหรับเก็บไฟล์ที่เลือก
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(
     initialData?.imageUrl || "",
   );
@@ -44,23 +45,32 @@ export const ProductForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = await getAccessTokenSilently();
+    setFormError(null); // เคลียร์ error เก่าก่อน
 
+    // เช็คกรณีสร้างใหม่แต่ไม่เลือกรูป
+    if (!initialData && !selectedFile) {
+      setFormError("VISUAL_ASSET_REQUIRED"); // ใช้ Text เท่ๆ ให้เข้ากับธีม
+      return;
+    }
+
+    const token = await getAccessTokenSilently();
     const payload = {
       ...formData,
       price: Number(formData.price),
       stock: Number(formData.stock),
     };
 
-    if (initialData) {
-      // สำหรับ Update (ถ้ามีระบบอัปโหลดรูปตอนแก้ก็ส่ง selectedFile ไปด้วย)
-      await updateProduct(initialData.id, payload, token);
-    } else {
-      // 2. ส่ง selectedFile ไปพร้อมกับ payload (เรียงลำดับตาม Store ที่เราแก้)
-      if (!selectedFile) return alert("กรุณาเลือกรูปภาพสินค้า");
-      await createProduct(payload, selectedFile, token);
+    try {
+      if (initialData) {
+        await updateProduct(initialData.id, payload, selectedFile, token);
+      } else {
+        await createProduct(payload, selectedFile!, token);
+      }
+      onSuccess();
+    } catch (error) {
+      console.error("Submit Error:", error);
+      setFormError("SYSTEM_SYNC_FAILED");
     }
-    onSuccess();
   };
 
   return (
@@ -217,6 +227,42 @@ export const ProductForm = ({
                   ? "Commit_Changes"
                   : "Push_To_Cloud"}
             </button>
+          </div>
+          {/* Footer Actions */}
+          <div className="pt-4 flex flex-col gap-4">
+            {/* Error Message แบบ Minimal */}
+            {formError && (
+              <div className="text-[10px] font-black text-red-500 uppercase tracking-widest animate-pulse">
+                Error // {formError}
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-8 py-5 border border-zinc-200 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-zinc-50 hover:border-black transition-all cursor-pointer"
+              >
+                Discard
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className={`flex-1 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all cursor-pointer shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] active:shadow-none ${
+                  formError
+                    ? "bg-red-500 text-white" // ถ้ามี Error ปุ่มจะเปลี่ยนเป็นสีแดง
+                    : "bg-black text-white hover:bg-zinc-800 disabled:bg-zinc-300"
+                }`}
+              >
+                {loading
+                  ? "System_Syncing..."
+                  : formError
+                    ? "Retry_Push"
+                    : initialData
+                      ? "Commit_Changes"
+                      : "Push_To_Cloud"}
+              </button>
+            </div>
           </div>
         </form>
       </div>

@@ -68,8 +68,8 @@ export interface ProductState {
   updateProduct: (
     id: string,
     data: UpdateProductInput,
+    file: File | null,
     token: string,
-    file: File,
   ) => Promise<void>;
   deleteProduct: (id: string, token: string) => Promise<void>;
 }

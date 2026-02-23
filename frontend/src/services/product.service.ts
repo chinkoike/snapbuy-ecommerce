@@ -61,8 +61,8 @@ export const ProductService = {
   update: async (
     id: string,
     data: UpdateProductPayload,
+    file: File | null,
     token: string,
-    file: File,
   ) => {
     const formData = new FormData();
 

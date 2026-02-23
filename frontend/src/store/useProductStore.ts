@@ -55,13 +55,13 @@ export const useProductStore = create<ProductState>((set) => ({
   updateProduct: async (
     id: string,
     data: UpdateProductInput,
+    file: File | null,
     token: string,
-    file: File,
   ) => {
     try {
       set({ loading: true, error: null });
       // ส่ง token ต่อไปให้ service
-      const updated = await ProductService.update(id, data, token, file);
+      const updated = await ProductService.update(id, data, file, token);
 
       set((state) => ({
         products: state.products.map((p) => (p.id === id ? updated : p)),
