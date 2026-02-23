@@ -67,9 +67,12 @@ export const ProductService = {
     const formData = new FormData();
 
     // 1. วนลูปใส่ข้อมูล Text ทั้งหมด
-    (Object.keys(data) as Array<keyof UpdateProductPayload>).forEach((key) => {
-      if (data[key] !== undefined && key !== "imageFile") {
-        formData.append(key, String(data[key]));
+    // ProductService.ts
+    Object.keys(data).forEach((key) => {
+      const value = data[key as keyof UpdateProductPayload];
+      // ส่งเฉพาะค่าที่มีอยู่จริง และไม่ส่ง imageFile ซ้ำในนี้
+      if (value !== undefined && value !== null && key !== "imageFile") {
+        formData.append(key, String(value));
       }
     });
 
