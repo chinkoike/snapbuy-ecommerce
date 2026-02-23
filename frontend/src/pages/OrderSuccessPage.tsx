@@ -19,7 +19,10 @@ const OrderSuccessPage = () => {
   } | null>(null);
   const handleUploadSlip = async () => {
     if (!file || !id) {
-      setStatusMsg({ type: "error", text: "กรุณาเลือกรูปภาพสลิปก่อนครับ" });
+      setStatusMsg({
+        type: "error",
+        text: "Please select an image of the receipt first.",
+      });
       return;
     }
 
@@ -30,7 +33,7 @@ const OrderSuccessPage = () => {
       if (success) {
         setStatusMsg({
           type: "success",
-          text: "ส่งหลักฐานเรียบร้อย! กำลังกลับหน้าโปรไฟล์...",
+          text: "Proof of submission completed! Returning to your profile...",
         });
         setTimeout(() => navigate("/profile"), 2000);
       } else {

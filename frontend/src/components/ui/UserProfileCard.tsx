@@ -5,63 +5,72 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   userFromDb,
   isLoading,
 }) => {
-  // --- ส่วนของ Skeleton UI ---
+  // --- ส่วนของ Skeleton (Loading State) ---
   if (isLoading) {
     return (
       <div className="lg:col-span-1">
-        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 relative overflow-hidden animate-pulse">
+        <div className="bg-white p-8 border border-black relative overflow-hidden animate-pulse rounded-sm">
           {/* Badge Skeleton */}
-          <div className="absolute top-0 right-0 p-4">
-            <div className="h-4 w-16 bg-zinc-100 rounded-full" />
+          <div className="absolute top-0 right-0 p-6">
+            <div className="h-3 w-12 bg-zinc-100" />
           </div>
 
           {/* Avatar Skeleton */}
-          <div className="w-20 h-20 bg-zinc-200 rounded-3xl mb-6 shadow-lg shadow-zinc-50" />
+          <div className="w-16 h-16 bg-zinc-200 mb-8 border border-zinc-100" />
 
           {/* Info Skeleton */}
-          <div className="h-6 w-3/4 bg-zinc-200 rounded-md mb-2" />
-          <div className="h-4 w-1/2 bg-zinc-100 rounded-md mb-6" />
+          <div className="h-5 w-3/4 bg-zinc-200 mb-3" />
+          <div className="h-3 w-1/2 bg-zinc-100 mb-10" />
 
           {/* Member Info Skeleton */}
-          <div className="pt-6 border-t border-gray-50 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="h-3 w-20 bg-zinc-100 rounded-md" />
-              <div className="h-4 w-10 bg-zinc-200 rounded-md" />
-            </div>
+          <div className="pt-8 border-t border-zinc-100 flex justify-between">
+            <div className="h-3 w-20 bg-zinc-100" />
+            <div className="h-3 w-10 bg-zinc-200" />
           </div>
         </div>
       </div>
     );
   }
 
-  // --- ส่วนของ UI จริง (เหมือนเดิมของคุณ) ---
+  // --- ส่วนของ UI จริง ---
   return (
     <div className="lg:col-span-1">
-      <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4">
-          <span className="text-[10px] font-black bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full uppercase tracking-tighter">
+      <div className="bg-white p-8 border border-black relative overflow-hidden rounded-sm group hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,0.05)] transition-all">
+        {/* Role Badge */}
+        <div className="absolute top-0 right-0 p-6">
+          <span className="text-[9px] font-black border border-black px-2 py-0.5 uppercase tracking-[0.2em]">
             {userFromDb?.role || "Customer"}
           </span>
         </div>
 
-        <div className="w-20 h-20 bg-linear-to-tr from-indigo-500 to-purple-500 rounded-3xl mb-6 flex items-center justify-center text-3xl shadow-lg shadow-indigo-200">
-          👤
+        {/* Avatar Area - ใช้ Placeholder ที่ดูดีขึ้น */}
+        <div className="w-16 h-16 bg-black mb-8 flex items-center justify-center text-white text-xl shadow-inner">
+          <span className="font-light italic">
+            {(userFromDb?.email?.[0] || "U").toUpperCase()}
+          </span>
         </div>
 
-        <h3 className="text-xl font-black text-gray-900 truncate">
+        {/* User Info */}
+        <h3 className="text-2xl font-black text-black truncate uppercase tracking-tighter leading-none mb-1">
           {userFromDb?.email?.split("@")[0] || "User Name"}
         </h3>
-        <p className="text-sm text-gray-400 font-medium mb-6 truncate">
+        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-10 truncate">
           {userFromDb?.email || "loading email..."}
         </p>
 
-        <div className="pt-6 border-t border-gray-50 space-y-4">
+        {/* Member Details */}
+        <div className="pt-8 border-t border-zinc-100 space-y-5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em]">
               Member Since
             </span>
-            <span className="text-sm font-bold text-gray-700">2026</span>
+            <span className="text-xs font-black text-black italic">2026</span>
           </div>
+
+          {/* เพิ่ม Link หรือปุ่มสไตล์ Minimal ถ้าจำเป็น */}
+          <button className="w-full py-3 border border-zinc-200 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-black hover:text-white transition-all">
+            Edit Profile
+          </button>
         </div>
       </div>
     </div>

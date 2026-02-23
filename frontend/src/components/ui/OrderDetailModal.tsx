@@ -13,39 +13,46 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-in fade-in duration-300"
       onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+        className="bg-white w-full max-w-2xl border border-black overflow-hidden shadow-[30px_30px_0px_0px_rgba(255,255,255,0.1)] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header */}
-        <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+        {/* Modal Header - สไตล์ Industrial Minimal */}
+        <div className="p-8 border-b border-zinc-100 flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-black text-gray-900">Order Details</h2>
-            <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest mt-1">
-              #{order.id.toUpperCase()}
-            </p>
+            <h2 className="text-3xl font-black text-black uppercase tracking-tighter italic">
+              Order_Details
+            </h2>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[10px] font-black bg-black text-white px-2 py-0.5 uppercase tracking-[0.2em]">
+                ID: {order.id.split("-")[0].toUpperCase()}
+              </span>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                / {new Date().getFullYear()}
+              </span>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-3 hover:bg-white rounded-2xl transition-colors shadow-sm"
+            className="text-black hover:rotate-90 transition-transform duration-300 font-light text-2xl"
           >
             ✕
           </button>
         </div>
 
-        {/* Item List */}
-        <div className="p-8 max-h-[60vh] overflow-y-auto">
-          <div className="space-y-6">
+        {/* Item List - ปรับให้เหมือนรายการในนิตยสาร */}
+        <div className="p-8 max-h-[50vh] overflow-y-auto custom-scrollbar">
+          <div className="space-y-8">
             {order.items?.map((item, idx: number) => (
               <div
                 key={idx}
-                className="flex justify-between items-center group"
+                className="flex justify-between items-center group pb-6 border-b border-zinc-50 last:border-0"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner group-hover:scale-105 transition-transform">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 bg-zinc-50 border border-zinc-100 flex items-center justify-center overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500">
                     {item.product?.imageUrl ? (
                       <img
                         src={item.product.imageUrl}
@@ -53,22 +60,29 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-2xl">🖼️</span>
+                      <span className="text-xs font-black text-zinc-300 uppercase">
+                        No_Img
+                      </span>
                     )}
                   </div>
 
                   <div>
-                    <p className="font-black text-gray-900">
+                    <p className="font-black text-black uppercase tracking-tight text-lg">
                       {item.product?.name || "Product Name"}
                     </p>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                      Qty: {item.quantity} × ฿
-                      {item.priceAtPurchase?.toLocaleString()}
-                    </p>
+                    <div className="flex items-center gap-3 mt-1">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                        Qty {item.quantity}
+                      </p>
+                      <span className="h-1 w-1 bg-zinc-200 rounded-full"></span>
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                        Unit ฿{item.priceAtPurchase?.toLocaleString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <p className="font-black text-gray-900">
+                <p className="font-black text-black text-lg tracking-tighter">
                   ฿
                   {(
                     item.quantity * (item.priceAtPurchase || 0)
@@ -77,42 +91,49 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Summary Block */}
-          <div className="mt-8 pt-8 border-t border-gray-100 space-y-3">
-            <div className="flex justify-between text-gray-400 font-bold uppercase tracking-widest text-[10px]">
-              <span>Subtotal</span>
+        {/* Summary Block - เน้น Typography หนาชัด */}
+        <div className="p-8 bg-zinc-50 border-t border-black">
+          <div className="space-y-4">
+            <div className="flex justify-between text-zinc-500 font-black uppercase tracking-[0.3em] text-[9px]">
+              <span>Subtotal_Value</span>
               <span>฿{order.totalPrice.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-gray-400 font-bold uppercase tracking-widest text-[10px]">
-              <span>Shipping</span>
-              <span>FREE</span>
+            <div className="flex justify-between text-zinc-500 font-black uppercase tracking-[0.3em] text-[9px]">
+              <span>Logistics / Shipping</span>
+              <span className="text-black italic underline decoration-1 underline-offset-4">
+                Complimentary
+              </span>
             </div>
-            <div className="flex justify-between text-gray-900 font-black text-xl pt-2">
-              <span>Total</span>
-              <span className="text-indigo-600">
+
+            <div className="pt-4 mt-4 border-t border-zinc-200 flex justify-between items-end">
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-400">
+                Total_Amount
+              </span>
+              <span className="text-4xl font-black text-black tracking-tighter">
                 ฿{order.totalPrice.toLocaleString()}
               </span>
             </div>
           </div>
-        </div>
 
-        {/* Footer Action */}
-        <div className="p-8 bg-gray-50/50 flex gap-3">
-          {order.status === "PENDING" && (
+          {/* Footer Action - ปุ่มเหลี่ยมที่มีน้ำหนัก */}
+          <div className="mt-10 flex gap-4">
+            {order.status === "PENDING" && (
+              <button
+                onClick={() => navigate(`/order-success/${order.id}`)}
+                className="flex-2 bg-black text-white py-5 font-black uppercase tracking-[0.3em] text-[10px] hover:bg-zinc-800 transition-all border border-black active:scale-[0.98]"
+              >
+                Execute Payment
+              </button>
+            )}
             <button
-              onClick={() => navigate(`/order-success/${order.id}`)}
-              className="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-black transition-colors"
+              onClick={onClose}
+              className="flex-1 bg-transparent border border-zinc-300 text-black py-5 font-black uppercase tracking-[0.3em] text-[10px] hover:border-black transition-all active:scale-[0.98]"
             >
-              Go to Payment
+              Return
             </button>
-          )}
-          <button
-            onClick={onClose}
-            className="flex-1 bg-white border border-gray-200 text-gray-900 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-50 transition-colors"
-          >
-            Close
-          </button>
+          </div>
         </div>
       </div>
     </div>

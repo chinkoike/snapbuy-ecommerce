@@ -3,7 +3,6 @@ import type { OrderListProps } from "../../../../shared/types/order";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useOrderStore } from "../../store/useOrderStore";
-import { CircleAlert } from "lucide-react";
 
 export const OrderList: React.FC<OrderListProps> = ({
   myOrders,
@@ -71,27 +70,24 @@ export const OrderList: React.FC<OrderListProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden relative">
-      {/* 🛡️ 1. Cancel Confirmation Modal (ย้ายไว้นอก Loop เพื่อความลื่นไหล) */}
+    <div className="bg-white border border-black overflow-hidden relative rounded-sm">
+      {/* 🛡️ 1. Cancel Confirmation Modal - ปรับให้ Minimal ดุดันขึ้น */}
       {orderToCancel && (
-        <div className="fixed inset-0 z-999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-999 flex items-center justify-center p-4 bg-black/80 backdrop-blur-[2px] animate-in fade-in duration-200">
+          <div className="bg-white border border-black p-10 max-w-sm w-full shadow-[20px_20px_0px_0px_rgba(0,0,0,0.1)] animate-in zoom-in-95 duration-200">
             <div className="text-center">
-              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <CircleAlert />
-              </div>
-              <h3 className="text-xl font-black text-gray-900 mb-2">
+              <h3 className="text-2xl font-black text-gray-900 mb-4 uppercase tracking-tighter">
                 Cancel Order?
               </h3>
-              <p className="text-gray-500 text-sm font-medium mb-8 leading-relaxed">
-                Are you sure? The items will be returned to stock immediately.
-                This cannot be undone.
+              <p className="text-gray-500 text-xs font-medium mb-10 tracking-widest uppercase leading-relaxed">
+                Items will be returned to stock. <br />
+                This action is permanent.
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <button
                 onClick={() => setOrderToCancel(null)}
-                className="flex-1 px-6 py-3 rounded-xl font-bold text-gray-400 hover:bg-gray-50 transition-colors"
+                className="flex-1 px-6 py-4 border border-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors"
                 disabled={loading}
               >
                 No
@@ -99,79 +95,91 @@ export const OrderList: React.FC<OrderListProps> = ({
               <button
                 onClick={handleConfirmCancel}
                 disabled={loading}
-                className="flex-1 px-6 py-3 rounded-xl font-bold bg-red-500 text-white hover:bg-red-600 shadow-lg transition-all disabled:bg-gray-300"
+                className="flex-1 px-6 py-4 bg-black text-white font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all disabled:bg-gray-300"
               >
-                {loading ? "..." : "Yes, Cancel"}
+                {loading ? "..." : "Confirm"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
-        <h3 className="font-black text-gray-900 uppercase tracking-widest text-sm">
+      {/* Header Section */}
+      <div className="px-8 py-6 border-b border-black flex justify-between items-center bg-zinc-50">
+        <h3 className="font-black text-black uppercase tracking-[0.3em] text-xs">
           Recent Orders
         </h3>
+        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+          {myOrders.length} Transactions
+        </span>
       </div>
 
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-zinc-100">
         {myOrders.length === 0 ? (
-          <div className="p-12 text-center text-gray-400 font-bold">
-            NO ORDER
+          <div className="p-20 text-center text-zinc-300 font-black uppercase tracking-[0.2em] text-sm">
+            No Order History
           </div>
         ) : (
           sortedOrders.map((order) => (
             <div
               key={order.id}
               onClick={() => onSelectOrder(order)}
-              className="cursor-pointer p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors"
+              className="group cursor-pointer p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-zinc-50 transition-all"
             >
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              {/* Left: ID & Date */}
+              <div className="flex items-center gap-6">
+                <div className="w-12 h-12 border border-zinc-200 flex items-center justify-center text-xl grayscale group-hover:grayscale-0 transition-all">
                   {order.status === "PAID"
-                    ? "✅"
+                    ? "✓"
                     : order.status === "CANCELLED"
-                      ? "❌"
-                      : "📦"}
+                      ? "✕"
+                      : "⬚"}
                 </div>
                 <div>
                   <p
-                    className={`font-black text-lg ${order.status === "CANCELLED" ? "text-gray-400 line-through" : "text-gray-900"}`}
+                    className={`font-black text-xl tracking-tighter ${
+                      order.status === "CANCELLED"
+                        ? "text-zinc-300 line-through"
+                        : "text-black"
+                    }`}
                   >
                     #{order.id.slice(-6).toUpperCase()}
                   </p>
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-tighter">
-                    {new Date(order.createdAt).toLocaleDateString("th-TH")}
+                  <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mt-1">
+                    {new Date(order.createdAt).toLocaleDateString("en-GB")}
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+              {/* Right: Price & Actions */}
+              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4">
                 <p
-                  className={`font-black text-xl ${order.status === "CANCELLED" ? "text-gray-300" : "text-gray-900"}`}
+                  className={`font-black text-2xl tracking-tighter ${
+                    order.status === "CANCELLED"
+                      ? "text-zinc-200"
+                      : "text-black"
+                  }`}
                 >
                   ฿{order.totalPrice.toLocaleString()}
                 </p>
 
-                <div className="flex gap-2 items-center">
-                  {/* Status Label */}
+                <div className="flex gap-3 items-center">
+                  {/* Status Badge - ปรับให้เป็นเส้นขีดๆ เรียบๆ */}
                   <span
-                    className={`text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase shadow-sm ${
+                    className={`text-[9px] px-3 py-1 font-black tracking-[0.15em] uppercase border ${
                       order.status === "PAID"
-                        ? "bg-green-100 text-green-600"
+                        ? "border-green-500 text-green-600"
                         : order.status === "CANCELLED"
-                          ? "bg-red-50 text-red-400"
-                          : order.slipUrl
-                            ? "bg-blue-100 text-blue-600"
-                            : "bg-yellow-100 text-yellow-600"
+                          ? "border-zinc-200 text-zinc-300"
+                          : "border-black text-black"
                     }`}
                   >
                     {order.status === "PENDING" && order.slipUrl
-                      ? "WAITING"
+                      ? "Processing"
                       : order.status}
                   </span>
 
-                  {/* 2. Logic การแสดงปุ่ม: ถ้า Cancelled หรือ Paid แล้ว จะไม่โชว์ปุ่มใดๆ */}
+                  {/* Buttons */}
                   {order.status === "PENDING" && (
                     <div
                       className="flex gap-2"
@@ -180,21 +188,21 @@ export const OrderList: React.FC<OrderListProps> = ({
                       {!order.slipUrl && (
                         <button
                           onClick={() => setOrderToCancel(order.id)}
-                          className="text-[10px] px-3 py-1 rounded-lg font-black uppercase tracking-widest text-red-500 hover:bg-red-50 transition-all border border-red-100"
+                          className="text-[9px] px-3 py-1 font-black uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors"
                         >
-                          Cancel
+                          [ Cancel ]
                         </button>
                       )}
 
                       <Link
                         to={`/order-success/${order.id}`}
-                        className={`text-[10px] px-4 py-1 rounded-lg font-black uppercase tracking-widest transition-all shadow-md ${
+                        className={`text-[9px] px-4 py-1 font-black uppercase tracking-widest transition-all border ${
                           order.slipUrl
-                            ? "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                            : "bg-indigo-600 text-white hover:bg-indigo-700"
+                            ? "border-zinc-200 text-zinc-400 hover:bg-zinc-100"
+                            : "bg-black text-white hover:bg-zinc-800"
                         }`}
                       >
-                        {order.slipUrl ? "Re-upload" : "Upload Slip"}
+                        {order.slipUrl ? "Edit Slip" : "Upload Slip"}
                       </Link>
                     </div>
                   )}

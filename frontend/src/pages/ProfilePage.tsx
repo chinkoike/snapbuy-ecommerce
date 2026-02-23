@@ -45,26 +45,28 @@ const ProfilePage = () => {
   // Combine loading states for initial entrance
   if (isAuthLoading)
     return (
-      <div className="flex justify-center items-center h-screen font-bold text-gray-400 animate-pulse">
-        Authenticating...
+      <div className="flex justify-center items-center h-screen bg-[#fafafa]">
+        <div className="text-[10px] font-black uppercase tracking-[0.5em] text-black animate-pulse">
+          Authenticating...
+        </div>
       </div>
     );
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-6 text-center">
-        <div className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-gray-100">
-          <h2 className="text-2xl font-black text-gray-900 mb-2">
-            Member Access Only
+      <div className="min-h-screen flex flex-col justify-center items-center bg-[#fafafa] p-6 text-center">
+        <div className="bg-white p-12 border border-black max-w-md w-full shadow-[20px_20px_0px_0px_rgba(0,0,0,0.05)]">
+          <h2 className="text-3xl font-black text-black mb-4 uppercase tracking-tighter">
+            Member Access
           </h2>
-          <p className="text-gray-500 mb-8">
-            Please log in to view your profile and orders.
+          <p className="text-zinc-500 text-xs uppercase tracking-widest leading-loose mb-10">
+            This curation is reserved <br /> for authenticated members only.
           </p>
           <button
             onClick={() => navigate("/")}
-            className="bg-black text-white px-8 py-3 rounded-2xl font-bold hover:scale-105 transition-transform"
+            className="w-full bg-black text-white px-8 py-4 font-black text-xs uppercase tracking-[0.3em] hover:bg-zinc-800 transition-all"
           >
-            Back to Home
+            Return to Home
           </button>
         </div>
       </div>
@@ -72,65 +74,84 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-8">
-          <div>
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-              My Profile
+    <div className="min-h-screen bg-[#fafafa] py-16 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-6xl mx-auto space-y-12">
+        {/* Header - Minimal & High Contrast */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-black pb-12">
+          <div className="space-y-2">
+            <h1 className="text-5xl md:text-7xl font-black text-black tracking-tighter uppercase leading-none">
+              Account
             </h1>
-            <p className="text-gray-500 font-medium">
-              Manage your info and track your orders
-            </p>
+            <div className="flex items-center gap-3">
+              <span className="h-px w-10 bg-black"></span>
+              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.4em]">
+                Management & Order Tracking
+              </p>
+            </div>
           </div>
+
           <button
             onClick={() =>
               logout({ logoutParams: { returnTo: window.location.origin } })
             }
-            className="self-start text-xs font-black uppercase tracking-widest text-red-500 bg-red-50 px-6 py-3 rounded-2xl hover:bg-red-500 hover:text-white transition-all"
+            className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-red-500 hover:text-red-600 transition-all"
           >
-            Logout
+            <span>[ Logout Session ]</span>
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* User Profile Info */}
-          <UserProfileCard userFromDb={userFromDb} />
+          <div className="lg:col-span-1">
+            <UserProfileCard userFromDb={userFromDb} />
+          </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Statistics Dashboard */}
-            <div className="grid grid-cols-2 gap-4">
+          <div className="lg:col-span-2 space-y-10">
+            {/* Statistics Dashboard - ปรับให้เป็นแบบกึ่งโปร่งใส เรียบหรู */}
+            <div className="grid grid-cols-2 gap-6">
               {/* Card 1 */}
-              <div className="bg-white p-6 rounded-4xl border border-gray-100 shadow-sm">
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
+              <div className="bg-white p-8 border border-black rounded-sm group hover:bg-black transition-colors duration-300">
+                <p className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 group-hover:text-zinc-500 transition-colors">
                   Total Orders
                 </p>
-                <p className="text-3xl font-black text-gray-900">
-                  {myOrders.length}
+                <p className="text-4xl font-black text-black group-hover:text-white transition-colors tracking-tighter">
+                  {String(myOrders.length).padStart(2, "0")}
                 </p>
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white p-6 rounded-4xl border border-gray-100 shadow-sm">
-                <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">
-                  Pending Payments
+              <div className="bg-white p-8 border border-black rounded-sm group hover:bg-black transition-colors duration-300">
+                <p className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 group-hover:text-zinc-500 transition-colors">
+                  Pending Actions
                 </p>
                 <p
-                  className={`text-3xl font-black ${pendingOrders > 0 ? "text-orange-500" : "text-gray-900"}`}
+                  className={`text-4xl font-black tracking-tighter transition-colors ${
+                    pendingOrders > 0
+                      ? "text-orange-500"
+                      : "text-black group-hover:text-white"
+                  }`}
                 >
-                  {pendingOrders}
+                  {String(pendingOrders).padStart(2, "0")}
                 </p>
               </div>
             </div>
 
-            {/* ✅ Order List with filtered data */}
-            <OrderList
-              myOrders={orders}
-              isLoading={isOrdersLoading}
-              onSelectOrder={(order) => setSelectedOrder(order)}
-            />
+            {/* ✅ Order List Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <h3 className="text-sm font-black uppercase tracking-[0.2em]">
+                  Purchase History
+                </h3>
+                <div className="h-px flex-1 bg-zinc-100"></div>
+              </div>
+
+              <OrderList
+                myOrders={orders}
+                isLoading={isOrdersLoading}
+                onSelectOrder={(order) => setSelectedOrder(order)}
+              />
+            </div>
 
             {/* Details Modal Overlay */}
             <OrderDetailModal

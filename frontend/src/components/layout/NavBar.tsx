@@ -33,71 +33,69 @@ const Navbar = () => {
     }
   };
   return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 font-sans">
+    <nav className="bg-white border-b border-black sticky top-0 z-50 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-24">
           {/* Left: Logo & Desktop Categories */}
-          <div className="flex items-center gap-4 lg:gap-10">
-            {/* Mobile Menu Button */}
+          <div className="flex items-center gap-6 lg:gap-12">
+            {/* Mobile Menu Button - ปรับให้เหลี่ยม */}
             <button
-              className="md:hidden p-2 -ml-2 text-gray-600"
+              className="md:hidden p-2 -ml-2 text-black hover:bg-zinc-50 transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              <span className="text-2xl">{isMobileMenuOpen ? "✕" : "☰"}</span>
+              <span className="text-xl font-light">
+                {isMobileMenuOpen ? "✕" : "☰"}
+              </span>
             </button>
 
             <Link to="/" className="shrink-0">
               <img
                 src={logo}
                 alt="snapbuy"
-                className="h-12 md:h-16 w-auto object-contain"
+                className="h-10 md:h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-500"
               />
             </Link>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em]">
-              <Link
-                to="/products"
-                className="hover:text-gray-500 transition-colors"
-              >
-                Shop
+            {/* Desktop Nav - ฟอนต์เล็กลงแต่เน้นระยะห่าง (Kerning) */}
+            <div className="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.3em]">
+              <Link to="/products" className="relative group py-2">
+                <span>Shop</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all group-hover:w-full"></span>
               </Link>
 
-              {/* Category Dropdown with Hover */}
+              {/* Category Dropdown */}
               <div
-                className="relative h-20 flex items-center"
+                className="relative h-24 flex items-center group cursor-pointer"
                 onMouseEnter={() => setIsCatOpen(true)}
                 onMouseLeave={() => setIsCatOpen(false)}
               >
                 <button
-                  className={`flex items-center gap-1 transition-colors ${isCatOpen ? "text-gray-500" : "text-gray-900"}`}
+                  className={`flex items-center gap-2 transition-colors ${isCatOpen ? "text-zinc-400" : "text-black"}`}
                 >
                   Categories
                   <span
-                    className={`text-[8px] transition-transform duration-300 ${isCatOpen ? "rotate-180" : ""}`}
+                    className={`text-[7px] transition-transform duration-300 ${isCatOpen ? "rotate-180" : ""}`}
                   >
                     ▼
                   </span>
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu - ปรับเป็นทรงเหลี่ยม Shadow คมๆ */}
                 {isCatOpen && (
-                  <div className="absolute top-[80%] left-0 w-56 bg-white border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.08)] rounded-2xl py-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="px-4 py-2 mb-1 border-b border-gray-50">
-                      <span className="text-[9px] text-gray-400 font-bold tracking-widest">
-                        SELECT CATEGORY
+                  <div className="absolute top-full left-0 w-64 bg-white border border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,0.05)] py-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="px-6 py-2 mb-2 border-b border-zinc-50">
+                      <span className="text-[8px] text-zinc-400 font-black tracking-[0.3em]">
+                        COLLECTIONS
                       </span>
                     </div>
                     {categories.map((cat) => (
                       <Link
                         key={cat.id}
                         to={`/products?category=${cat.id}`}
-                        className="flex items-center justify-between px-5 py-2.5 text-[12px] text-gray-600 hover:bg-gray-50 hover:text-indigo-600 font-bold transition-all"
+                        className="flex items-center justify-between px-6 py-3 text-[11px] text-black hover:bg-black hover:text-white font-black transition-all uppercase tracking-widest"
                       >
                         {cat.name}
-                        <span className="opacity-0 group-hover:opacity-100">
-                          →
-                        </span>
+                        <span className="text-[14px]">→</span>
                       </Link>
                     ))}
                   </div>
@@ -105,57 +103,56 @@ const Navbar = () => {
               </div>
 
               {userFromDb?.role === "ADMIN" && (
-                <Link to="/admin" className="text-red-500 hover:text-red-600">
-                  Admin
+                <Link
+                  to="/admin"
+                  className="text-red-500 hover:bg-red-50 px-2 py-1 border border-transparent hover:border-red-100 transition-all"
+                >
+                  Admin_Panel
                 </Link>
               )}
             </div>
           </div>
 
-          {/* Center: Search (Desktop) */}
+          {/* Center: Search (Desktop) - ปรับจากทรงกลมเป็นทรงเหลี่ยม (Snap Input Style) */}
           <form
             onSubmit={handleSearch}
-            className="hidden lg:flex md:flex flex-1 max-w-md mx-8"
+            className="hidden lg:flex md:flex flex-1 max-w-sm mx-10"
           >
             <div className="relative w-full group">
-              {/* ไอคอนแว่นขยายด้านซ้าย */}
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-black transition-colors">
-                <Search size={18} strokeWidth={2.5} />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-black group-focus-within:scale-110 transition-transform">
+                <Search size={16} strokeWidth={3} />
               </div>
 
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search products..."
-                // ปรับ className: เพิ่ม pl-11 เพื่อไม่ให้ตัวหนังสือทับไอคอน
-                className="snap-input w-full pl-11 pr-11 py-2.5 bg-gray-50 border border-gray-100 rounded-full 
-                 focus:bg-white transition-all duration-300 placeholder:text-gray-400 placeholder:font-medium"
+                placeholder="SEARCH CATALOGUE..."
+                className="w-full pl-12 pr-10 py-3 bg-zinc-50 border border-zinc-100 focus:border-black focus:bg-white transition-all duration-300 text-[11px] font-bold tracking-widest uppercase outline-none rounded-sm"
               />
 
-              {/* ปุ่มล้างคำค้นหา (โชว์เฉพาะเมื่อมีตัวอักษร) */}
               {searchTerm && (
                 <button
                   type="button"
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-black transition-colors"
                 >
-                  <X size={16} strokeWidth={3} />
+                  <X size={14} strokeWidth={3} />
                 </button>
               )}
             </div>
           </form>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2 md:gap-5">
-            <button onClick={openDrawer} className="relative">
+          <div className="flex items-center gap-4 md:gap-8">
+            <button onClick={openDrawer} className="relative group p-2">
               <ShoppingBag
-                className="hover:text-gray-400 transition duration-200"
-                size={25}
+                className="group-hover:scale-110 transition-transform duration-300"
+                size={22}
+                strokeWidth={2}
               />
-
               {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-black text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full">
+                <span className="absolute top-1 right-1 bg-black text-white text-[7px] w-4 h-4 flex items-center justify-center font-black">
                   {cart.reduce((sum, item) => sum + item.quantity, 0)}
                 </span>
               )}
@@ -164,63 +161,70 @@ const Navbar = () => {
             {isAuthenticated ? (
               <Link
                 to="/profile"
-                className="flex items-center gap-3 pl-2 border-l border-gray-100"
+                className="flex items-center gap-4 pl-6 border-l border-zinc-100"
               >
                 <div className="text-right hidden lg:block">
-                  <p className="text-[10px] font-black text-gray-900 leading-none mb-1 uppercase tracking-tighter">
+                  <p className="text-[9px] font-black text-black leading-none mb-1 uppercase tracking-widest">
                     {auth0User?.nickname || auth0User?.name}
                   </p>
-                  <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">
-                    {userFromDb?.role || "Member"}
+                  <p className="text-[7px] text-zinc-400 font-bold uppercase tracking-[0.3em]">
+                    {userFromDb?.role || "Verified Member"}
                   </p>
                 </div>
-                <img
-                  src={auth0User?.picture}
-                  alt="Profile"
-                  className="w-9 h-9 rounded-full ring-2 ring-transparent hover:ring-black transition-all p-0.5"
-                />
+                <div className="relative">
+                  <img
+                    src={auth0User?.picture}
+                    alt="Profile"
+                    className="w-8 h-8 border border-black p-0.5 hover:bg-black transition-all"
+                  />
+                </div>
               </Link>
             ) : (
               <button
                 onClick={() => loginWithRedirect()}
-                className="text-[11px] font-black uppercase tracking-widest bg-black text-white px-6 py-2.5 rounded-full hover:bg-gray-800 transition-all shadow-lg shadow-black/10"
+                className="text-[10px] font-black uppercase tracking-[0.3em] border border-black px-6 py-3 hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] active:translate-y-1 active:shadow-none"
               >
-                Login
+                Sign In
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* 📱 Mobile Menu Overlay */}
+      {/* 📱 Mobile Menu Overlay - ปรับให้เหลี่ยมและดู Clean ขึ้น */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-200 py-6 px-6 space-y-6 animate-in slide-in-from-top duration-300 z-40">
-          <div className="space-y-4">
-            <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase">
-              Navigation
-            </p>
-            <Link
-              to="/products"
-              className="block text-lg font-bold"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Shop All
-            </Link>
+        <div className="md:hidden absolute top-24 left-0 w-full bg-white border-b border-black py-8 px-8 space-y-8 animate-in slide-in-from-top duration-300 z-40 shadow-2xl">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <p className="text-[9px] font-black text-zinc-300 tracking-[0.4em] uppercase">
+                Navigation
+              </p>
+              <Link
+                to="/products"
+                className="block text-2xl font-black uppercase tracking-tighter"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Shop Catalogue
+              </Link>
+            </div>
 
-            <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-6">
-              Categories
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  to={`/products?category=${cat.id}`}
-                  className="bg-gray-50 p-3 rounded-xl text-sm font-bold"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {cat.name}
-                </Link>
-              ))}
+            <div className="space-y-4 pt-4 border-t border-zinc-50">
+              <p className="text-[9px] font-black text-zinc-300 tracking-[0.4em] uppercase">
+                Categories
+              </p>
+              <div className="grid grid-cols-1 gap-2">
+                {categories.map((cat) => (
+                  <Link
+                    key={cat.id}
+                    to={`/products?category=${cat.id}`}
+                    className="flex justify-between items-center bg-zinc-50 px-5 py-4 text-xs font-black uppercase tracking-widest border border-transparent hover:border-black transition-all"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {cat.name}
+                    <span>→</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
