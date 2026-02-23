@@ -19,21 +19,33 @@ router.post(
   "/admin/products",
   checkJwt,
   requireAdmin,
-
+  uploadCloud.single("image"),
   createProduct,
 );
+// ใน product.route.ts
 router.post(
   "/admin/products/upload-image",
   checkJwt,
   requireAdmin,
   uploadCloud.single("image"),
-  (req, res) => {
+  async (req, res) => {
+    // ใส่ async ด้วย
     try {
-      if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-      const imageUrl = req.file.path;
-      res.json({ imageUrl });
-    } catch (error) {
-      res.status(500).json({ error: "Upload failed" });
+      const file = req.file as any;
+
+      if (!file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // ใช้สูตรเดียวกับ uploadSlip ที่คุณทำได้
+      const imageUrl = file.path || file.secure_url;
+
+      console.log("Upload Success:", imageUrl); // ดู Log ใน Render
+
+      return res.json({ imageUrl }); // ส่งกลับไปให้ Frontend เอาไปใส่ payload.imageUrl
+    } catch (error: any) {
+      console.error("Upload Route Error:", error);
+      return res.status(500).json({ error: error.message || "Upload failed" });
     }
   },
 );

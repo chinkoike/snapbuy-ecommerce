@@ -38,7 +38,6 @@ export type CreateProductInput = {
   price: number;
   stock: number;
   imageUrl?: string | null;
-
   categoryId: string;
 };
 export type UpdateProductInput = {

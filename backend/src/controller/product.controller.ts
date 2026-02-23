@@ -113,71 +113,61 @@ export const getProductById = async (req: Request, res: Response) => {
 //----------------------create product controller---------------------------------------
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const data: CreateProductInput = req.body;
+    const data = req.body;
+    const file = req.file as any; // มาจาก uploadCloud.single("image") ใน Route
 
-    // 1. ดึงไฟล์รูปภาพจาก Multer (ที่อัปโหลดไป Cloudinary แล้ว)
-    const file = req.file as any;
-
-    // ตรวจสอบว่ามีไฟล์ส่งมาไหม (ถ้า Business Logic บังคับว่าต้องมีรูป)
+    // 1. ตรวจสอบไฟล์
     if (!file) {
       return res.status(400).json({ error: "กรุณาอัปโหลดรูปภาพสินค้า" });
     }
-
-    // 2. ดึง URL จาก Cloudinary
-    // ปกติจะเป็น file.path หรือ file.secure_url ขึ้นอยู่กับการตั้งค่า storage
     const imageUrl = file.path || file.secure_url;
 
-    // 3. เช็ค category ก่อน
+    // 2. เช็ค Category
     const categoryExists = await prisma.category.findUnique({
       where: { id: data.categoryId },
     });
-
     if (!categoryExists) {
-      return res.status(400).json({ error: "Invalid categoryId" });
+      return res
+        .status(400)
+        .json({ error: "Invalid categoryId (ไม่พบหมวดหมู่นี้)" });
     }
 
-    // 4. สร้าง Product พร้อมบันทึก imageUrl ที่ได้จาก Cloudinary
+    // 3. สร้าง Product (แปลงเลขด้วย Number + Math.round)
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
         description: data.description || "",
-        price: Math.floor(Number(data.price)) || 0,
-        stock: Math.floor(Number(data.stock)) || 0,
+        price: Math.round(Number(data.price)) || 0,
+        stock: Math.round(Number(data.stock)) || 0,
         imageUrl: imageUrl,
         categoryId: data.categoryId,
       },
+      include: { category: true }, // เพื่อให้ Frontend ได้ข้อมูลครบ
     });
 
-    return res.status(201).json({
-      message: "สร้างสินค้าสำเร็จ",
-      product: newProduct,
-    });
+    return res.status(201).json(newProduct);
   } catch (error: any) {
-    console.error("Database Error:", error);
-    return res.status(500).json({
-      error: "Internal Server Error",
-      details: error.message,
-    });
+    console.error("Create Product Error:", error);
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
   }
 };
 
-//----------------------update product controller---------------------------------------
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, description, price, stock, categoryId, imageUrl } = req.body;
 
   try {
-    // สร้าง Object เฉพาะฟิลด์ที่ต้องการอัปเดต
     const updateData: any = {};
-
     if (name) updateData.name = name;
     if (description !== undefined) updateData.description = description;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
 
-    // ✅ จัดการเรื่องตัวเลขให้เป็น Integer
+    // ✅ ป้องกัน Bug เรื่องตัวเลข
     if (price !== undefined) updateData.price = Math.round(Number(price));
     if (stock !== undefined) updateData.stock = Math.round(Number(stock));
 
-    // ✅ เช็ค categoryId ก่อนอัปเดต (ถ้ามีส่งมา)
     if (categoryId) {
       const categoryExists = await prisma.category.findUnique({
         where: { id: categoryId },
@@ -186,8 +176,6 @@ export const updateProduct = async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Invalid categoryId" });
       updateData.categoryId = categoryId;
     }
-
-    if (imageUrl) updateData.imageUrl = imageUrl;
 
     const updated = await prisma.product.update({
       where: { id: id as string },
@@ -200,11 +188,10 @@ export const updateProduct = async (req: Request, res: Response) => {
     console.error("Update Error:", error);
     res.status(500).json({
       error: "Update failed",
-      details: error.code === "P2025" ? "Product not found" : error.message,
+      details: error.code === "P2025" ? "ไม่พบสินค้านี้ในระบบ" : error.message,
     });
   }
 };
-
 // ----------------------delete product controller---------------------------------------
 export const toggleProductStatus = async (req: Request, res: Response) => {
   const id = req.params.id as string;

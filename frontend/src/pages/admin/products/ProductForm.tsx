@@ -88,9 +88,7 @@ export const ProductForm = ({
       onClose();
     } catch (error: unknown) {
       console.error("Submission Error:", error);
-      // ✅ ดึง Error จริงจาก Backend มาโชว์
-      const errorMessage = "SYSTEM_SYNC_FAILED";
-      setFormError(errorMessage.toUpperCase());
+      setFormError("Submission Error:");
     }
   };
 
