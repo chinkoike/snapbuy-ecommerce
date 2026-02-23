@@ -84,8 +84,7 @@ export const ProductService = {
     if (file) {
       formData.append("image", file);
     }
-    console.log("DEBUG: Updating ID ->", id);
-    console.log("DEBUG: Final URL ->", `/api/admin/products/${id}`);
+
     const res = await api.patch(`/api/admin/products/${id}`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -96,7 +95,7 @@ export const ProductService = {
   delete: async (id: string, token: string): Promise<ProductData> => {
     // ระบุ Return Type เป็น ProductData
     const res = await api.patch(
-      `/api/admin/products/${id}`,
+      `/api/admin/products/${id}/status`,
       {},
       {
         headers: { Authorization: `Bearer ${token}` },

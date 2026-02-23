@@ -30,7 +30,7 @@ router.patch(
   updateProduct,
 );
 router.patch(
-  "/admin/products/:id",
+  "/admin/products/:id/status",
   checkJwt,
   requireAdmin,
   toggleProductStatus,
