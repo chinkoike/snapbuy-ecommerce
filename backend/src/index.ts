@@ -14,9 +14,25 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
+// เปลี่ยนจากเดิมเป็นแบบนี้ครับ
 app.use(
   cors({
-    origin: "https://snapbuy-ecommerce.vercel.app",
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://snapbuy-ecommerce.vercel.app",
+        "http://localhost:5173",
+      ];
+
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
@@ -49,5 +65,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 // Start Server
 app.listen(PORT, () => {
-  console.log(`🚀 Server is barking on port ${PORT}`);
+  console.log(` Server is barking on port ${PORT}`);
 });
