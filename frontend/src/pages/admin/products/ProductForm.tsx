@@ -10,7 +10,7 @@ export const ProductForm = ({
   onSuccess,
   onClose,
 }: ProductFormProps & { onClose: () => void }) => {
-  const { createProduct, updateProduct, loading } = useProductStore();
+  const { products, createProduct, updateProduct, loading } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
   const { getAccessTokenSilently } = useAuth0();
 
@@ -94,6 +94,14 @@ export const ProductForm = ({
       setFormError("Submission Error:");
     }
   };
+  if (loading && products.length === 0)
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="animate-pulse font-black tracking-widest uppercase opacity-20">
+          Syncing Data...
+        </div>
+      </div>
+    );
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
