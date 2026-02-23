@@ -84,7 +84,8 @@ export const ProductService = {
     if (file) {
       formData.append("image", file);
     }
-
+    console.log("DEBUG: Updating ID ->", id);
+    console.log("DEBUG: Final URL ->", `/api/admin/products/${id}`);
     const res = await api.patch(`/api/admin/products/${id}`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
