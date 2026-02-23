@@ -92,7 +92,7 @@ export const ProductList = ({ onEdit }: ProductListProps) => {
 
               <td className="p-6">
                 <p className="text-base font-black text-black tracking-tighter">
-                  ฿{product.price.toLocaleString()}
+                  ฿{Number(product.price || 0).toLocaleString()}
                 </p>
                 <p className="text-[10px] text-zinc-400 font-black tracking-widest uppercase mt-1">
                   Stock_Level:{" "}
