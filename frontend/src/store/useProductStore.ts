@@ -3,7 +3,6 @@ import { ProductService } from "../services/product.service";
 import type {
   CreateProductInput,
   ProductState,
-  UpdateProductInput,
 } from "../../../shared/types/product";
 
 const getErrorMessage = (error: unknown) => {
@@ -52,26 +51,28 @@ export const useProductStore = create<ProductState>((set) => ({
     }
   },
 
-  updateProduct: async (
-    id: string,
-    data: UpdateProductInput,
-    file: File | null,
-    token: string,
-  ) => {
+  updateProduct: async (id, data, file, token) => {
+    set({ loading: true, error: null });
     try {
-      set({ loading: true, error: null });
-      // ส่ง token ต่อไปให้ service
-      const updated = await ProductService.update(id, data, file, token);
+      // ✅ เปลี่ยนจาก let เป็น const เพราะเราแค่ "แก้ไข้อ็อบเจกต์" ไม่ได้ "เปลี่ยนอ็อบเจกต์ใหม่ทั้งก้อน"
+      const payload = { ...data };
+
+      if (file) {
+        const { imageUrl } = await ProductService.uploadImage(file, token);
+        payload.imageUrl = imageUrl; // อันนี้คือการแก้ property ข้างใน const ยอมให้ทำได้ครับ
+      }
+
+      const updatedProduct = await ProductService.update(id, payload, token);
 
       set((state) => ({
-        products: state.products.map((p) => (p.id === id ? updated : p)),
+        products: state.products.map((p) => (p.id === id ? updatedProduct : p)),
         loading: false,
       }));
-    } catch (err: unknown) {
-      set({ error: getErrorMessage(err), loading: false });
+    } catch (error: unknown) {
+      set({ loading: false });
+      throw error;
     }
   },
-
   deleteProduct: async (id: string, token: string) => {
     try {
       set({ loading: true, error: null });

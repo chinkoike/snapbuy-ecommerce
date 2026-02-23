@@ -100,6 +100,3 @@ export interface GetProductsResponse {
   totalPages: number;
   totalCount: number;
 }
-export type UpdateProductPayload = Partial<UpdateProductInput> & {
-  imageFile?: File | null; // เพิ่มฟิลด์สำหรับเก็บไฟล์รูปภาพที่จะอัปโหลดใหม่
-};

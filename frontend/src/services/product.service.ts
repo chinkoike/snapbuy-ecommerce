@@ -2,7 +2,7 @@ import type {
   ProductData,
   CreateProductInput,
   GetProductsResponse,
-  UpdateProductPayload,
+  UpdateProductInput,
 } from "../../../shared/types/product";
 import { api } from "../lib/axios";
 
@@ -58,37 +58,27 @@ export const ProductService = {
     return res.data;
   },
 
-  // ProductService.ts
+  uploadImage: async (file: File, token: string) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await api.post("/api/admin/products/upload-image", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data; // จะได้ { imageUrl: "..." }
+  },
   update: async (
     id: string,
-    data: UpdateProductPayload,
-    file: File | null,
+    data: UpdateProductInput,
     token: string,
-  ) => {
-    const formData = new FormData();
-
-    Object.keys(data).forEach((key) => {
-      const value = data[key as keyof UpdateProductPayload];
-
-      // ✅ เพิ่มเงื่อนไข value !== "" เพื่อไม่ส่งค่าว่างไปกวน Backend
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== "" &&
-        key !== "imageFile"
-      ) {
-        formData.append(key, String(value));
-      }
-    });
-
-    if (file) {
-      formData.append("image", file);
-    }
-
-    const res = await api.patch(`/api/admin/products/${id}`, formData, {
+  ): Promise<ProductData> => {
+    const res = await api.patch(`/api/admin/products/${id}`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res.data;
+    return res.data; // Backend ต้องส่ง Object สินค้าตัวเต็มกลับมา
   },
 
   // ใน ProductService.ts

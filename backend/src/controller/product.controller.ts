@@ -163,70 +163,25 @@ export const createProduct = async (req: Request, res: Response) => {
 
 //----------------------update product controller---------------------------------------
 export const updateProduct = async (req: Request, res: Response) => {
-  const id = req.params.id as string;
-  const rawBody: Partial<ProductData> = req.body;
-  const file = req.file as any;
+  const { id } = req.params;
+  const dataToUpdate = req.body; // ตอนนี้จะเป็น JSON สะอาดๆ แล้ว
 
   try {
-    const existingProduct = await prisma.product.findUnique({
-      where: { id },
-    });
+    // กรองค่าตัวเลขให้ชัวร์อีกครั้ง
+    if (dataToUpdate.price) dataToUpdate.price = Number(dataToUpdate.price);
+    if (dataToUpdate.stock !== undefined)
+      dataToUpdate.stock = Number(dataToUpdate.stock);
 
-    if (!existingProduct) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const dataToUpdate: any = {};
-
-    // ✅ ใช้การเช็คแบบระมัดระวังขึ้น: ต้องมีค่าและไม่เป็น string ว่าง
-    if (rawBody.name) dataToUpdate.name = rawBody.name;
-    if (rawBody.description !== undefined)
-      dataToUpdate.description = rawBody.description;
-
-    // ✅ ตรวจสอบตัวเลขให้ชัวร์
-    if (rawBody.price !== undefined && String(rawBody.price) !== "") {
-      const p = Number(rawBody.price);
-      if (!isNaN(p)) dataToUpdate.price = p;
-    }
-
-    // สำหรับ Stock
-    if (rawBody.stock !== undefined && String(rawBody.stock) !== "") {
-      const s = Number(rawBody.stock);
-      if (!isNaN(s)) dataToUpdate.stock = s;
-    }
-    // จัดการรูปภาพ
-    if (file) {
-      dataToUpdate.imageUrl = file.path || file.secure_url;
-    } else if (rawBody.imageUrl) {
-      dataToUpdate.imageUrl = rawBody.imageUrl;
-    }
-
-    // ✅ เช็ค CategoryId (ต้องไม่เป็นค่าว่าง)
-    if (rawBody.categoryId && rawBody.categoryId !== "") {
-      const categoryExists = await prisma.category.findUnique({
-        where: { id: rawBody.categoryId },
-      });
-
-      if (!categoryExists) {
-        return res.status(400).json({ error: "Invalid categoryId" });
-      }
-      dataToUpdate.categoryId = rawBody.categoryId;
-    }
-
-    const updatedProduct = await prisma.product.update({
-      where: { id },
+    const updated = await prisma.product.update({
+      where: { id: id as string },
       data: dataToUpdate,
       include: { category: true },
     });
 
-    res.json(updatedProduct);
-  } catch (error) {
-    // 💡 Debug สำคัญ: พิมพ์ error ออกมาดูใน Render Logs
-    console.error("DEBUG - Prisma Update Error:", error);
-    res.status(500).json({
-      error: "Internal Server Error",
-      details: error instanceof Error ? error.message : "Unknown error",
-    });
+    res.json(updated);
+  } catch (error: any) {
+    console.error("Update Error:", error);
+    res.status(500).json({ error: "Update failed", details: error.message });
   }
 };
 
