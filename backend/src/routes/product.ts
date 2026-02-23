@@ -19,7 +19,7 @@ router.post(
   "/admin/products",
   checkJwt,
   requireAdmin,
-  uploadCloud.single("image"), // <--- ต้องมีบรรทัดนี้!
+
   createProduct,
 );
 router.post(

@@ -59,7 +59,6 @@ export const ProductForm = ({
     e.preventDefault();
     setFormError(null);
 
-    // ป้องกันการสร้างสินค้าใหม่โดยไม่มีรูป
     if (!initialData && !selectedFile) {
       setFormError("VISUAL_ASSET_REQUIRED");
       return;
@@ -68,30 +67,30 @@ export const ProductForm = ({
     try {
       const token = await getAccessTokenSilently();
 
-      // ปั้นก้อนข้อมูลให้สะอาดที่สุดก่อนส่ง (ป้องกัน 500 จาก Prisma)
+      // ✅ ปรับเลขให้เป็น Integer ตาม Prisma Schema
       const cleanPayload = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        price: parseFloat(formData.price) || 0,
-        stock: parseInt(formData.stock, 10) || 0,
+        price: Math.round(parseFloat(formData.price)) || 0, // ป้องกันทศนิยมไปทำ Prisma พัง
+        stock: Math.round(parseFloat(formData.stock)) || 0,
         categoryId: formData.categoryId,
       };
 
       if (initialData) {
-        // ขั้นตอน: อัปเดต (Store จะจัดการอัปโหลดรูปก่อนถ้ามี selectedFile)
         await updateProduct(initialData.id, cleanPayload, selectedFile, token);
       } else {
-        // ขั้นตอน: สร้างใหม่
-        await createProduct(cleanPayload, selectedFile!, token);
+        // สำหรับ Create ต้องมั่นใจว่า selectedFile ไม่เป็น null
+        if (!selectedFile) throw new Error("IMAGE_REQUIRED");
+        await createProduct(cleanPayload, selectedFile, token);
       }
 
       onSuccess();
       onClose();
     } catch (error: unknown) {
       console.error("Submission Error:", error);
-      // ดึง Error Message จาก Backend มาโชว์ (ถ้ามี)
-      const msg = "SYSTEM_SYNC_FAILED";
-      setFormError(msg.toUpperCase());
+      // ✅ ดึง Error จริงจาก Backend มาโชว์
+      const errorMessage = "SYSTEM_SYNC_FAILED";
+      setFormError(errorMessage.toUpperCase());
     }
   };
 

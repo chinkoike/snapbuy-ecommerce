@@ -140,10 +140,10 @@ export const createProduct = async (req: Request, res: Response) => {
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
-        description: data.description,
-        price: Number(data.price), // มั่นใจว่าแปลงเป็น Number เพราะ FormData ส่งมาเป็น String
-        stock: Number(data.stock),
-        imageUrl: imageUrl, // ใช้ URL จาก Cloudinary แทน data.imageUrl เดิม
+        description: data.description || "",
+        price: Math.floor(Number(data.price)) || 0,
+        stock: Math.floor(Number(data.stock)) || 0,
+        imageUrl: imageUrl,
         categoryId: data.categoryId,
       },
     });
@@ -164,24 +164,44 @@ export const createProduct = async (req: Request, res: Response) => {
 //----------------------update product controller---------------------------------------
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const dataToUpdate = req.body; // ตอนนี้จะเป็น JSON สะอาดๆ แล้ว
+  const { name, description, price, stock, categoryId, imageUrl } = req.body;
 
   try {
-    // กรองค่าตัวเลขให้ชัวร์อีกครั้ง
-    if (dataToUpdate.price) dataToUpdate.price = Number(dataToUpdate.price);
-    if (dataToUpdate.stock !== undefined)
-      dataToUpdate.stock = Number(dataToUpdate.stock);
+    // สร้าง Object เฉพาะฟิลด์ที่ต้องการอัปเดต
+    const updateData: any = {};
+
+    if (name) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+
+    // ✅ จัดการเรื่องตัวเลขให้เป็น Integer
+    if (price !== undefined) updateData.price = Math.round(Number(price));
+    if (stock !== undefined) updateData.stock = Math.round(Number(stock));
+
+    // ✅ เช็ค categoryId ก่อนอัปเดต (ถ้ามีส่งมา)
+    if (categoryId) {
+      const categoryExists = await prisma.category.findUnique({
+        where: { id: categoryId },
+      });
+      if (!categoryExists)
+        return res.status(400).json({ error: "Invalid categoryId" });
+      updateData.categoryId = categoryId;
+    }
+
+    if (imageUrl) updateData.imageUrl = imageUrl;
 
     const updated = await prisma.product.update({
       where: { id: id as string },
-      data: dataToUpdate,
+      data: updateData,
       include: { category: true },
     });
 
     res.json(updated);
   } catch (error: any) {
     console.error("Update Error:", error);
-    res.status(500).json({ error: "Update failed", details: error.message });
+    res.status(500).json({
+      error: "Update failed",
+      details: error.code === "P2025" ? "Product not found" : error.message,
+    });
   }
 };
 
