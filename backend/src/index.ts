@@ -13,26 +13,9 @@ import adminRouter from "./routes/admin.js";
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware
-// เปลี่ยนจากเดิมเป็นแบบนี้ครับ
 app.use(
   cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        "https://snapbuy-ecommerce.vercel.app",
-        "http://localhost:5173",
-      ];
-
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app")
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: true,
     credentials: true,
   }),
 );
