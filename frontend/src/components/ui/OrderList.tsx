@@ -13,7 +13,25 @@ export const OrderList: React.FC<OrderListProps> = ({
   const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
   const { getAccessTokenSilently } = useAuth0();
   const { cancelOrder, loading } = useOrderStore();
+  const sortedOrders = [...myOrders].sort((a, b) => {
+    const priority: Record<string, number> = {
+      PENDING: 1,
+      WAITING: 2,
+      PAID: 3,
+      CANCELLED: 4,
+    };
 
+    const priorityA =
+      a.status === "PENDING" && a.slipUrl ? 2 : priority[a.status];
+    const priorityB =
+      b.status === "PENDING" && b.slipUrl ? 2 : priority[b.status];
+
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
   const handleConfirmCancel = async () => {
     if (!orderToCancel) return;
     try {
@@ -102,7 +120,7 @@ export const OrderList: React.FC<OrderListProps> = ({
             NO ORDER
           </div>
         ) : (
-          myOrders.map((order) => (
+          sortedOrders.map((order) => (
             <div
               key={order.id}
               onClick={() => onSelectOrder(order)}
