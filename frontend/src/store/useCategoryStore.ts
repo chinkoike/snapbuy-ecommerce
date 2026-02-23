@@ -21,10 +21,10 @@ export const useCategoryStore = create<CategoryStore>((set) => ({
       console.log(error);
     }
   },
-  addCategory: async (name: string) => {
+  addCategory: async (name: string, token: string) => {
     set({ loading: true, error: null });
     try {
-      const newCategory = await categoryService.createCategory(name);
+      const newCategory = await categoryService.createCategory(name, token);
 
       // เมื่อสร้างสำเร็จ ให้เอาข้อมูลใหม่ไป "ต่อท้าย" ใน list เดิมทันที
       set((state) => ({
