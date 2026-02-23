@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useCategoryStore } from "../../store/useCategoryStore";
 import { Search, ShoppingBag, X } from "lucide-react";
 import { useCartStore } from "../../store/useCartStore";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,7 +48,7 @@ const Navbar = () => {
 
             <Link to="/" className="shrink-0">
               <img
-                src="/src/assets/logo.png" // แก้ path ให้ชัวร์ว่าขึ้นต้นด้วย /
+                src={logo}
                 alt="snapbuy"
                 className="h-12 md:h-16 w-auto object-contain"
               />
