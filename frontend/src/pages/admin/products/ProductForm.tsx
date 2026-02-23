@@ -30,6 +30,12 @@ export const ProductForm = ({
 
   useEffect(() => {
     fetchCategories();
+    // Cleanup preview URL เมื่อปิด Component
+    return () => {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
   }, [fetchCategories]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +43,8 @@ export const ProductForm = ({
     if (file) {
       setFormError(null);
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      const newPreview = URL.createObjectURL(file);
+      setPreviewUrl(newPreview);
     }
   };
 
@@ -52,36 +59,47 @@ export const ProductForm = ({
     e.preventDefault();
     setFormError(null);
 
+    // ป้องกันการสร้างสินค้าใหม่โดยไม่มีรูป
     if (!initialData && !selectedFile) {
       setFormError("VISUAL_ASSET_REQUIRED");
       return;
     }
 
-    const token = await getAccessTokenSilently();
-    const payload = {
-      ...formData,
-      price: Number(formData.price),
-      stock: Number(formData.stock),
-    };
-
     try {
+      const token = await getAccessTokenSilently();
+
+      // ปั้นก้อนข้อมูลให้สะอาดที่สุดก่อนส่ง (ป้องกัน 500 จาก Prisma)
+      const cleanPayload = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        price: parseFloat(formData.price) || 0,
+        stock: parseInt(formData.stock, 10) || 0,
+        categoryId: formData.categoryId,
+      };
+
       if (initialData) {
-        await updateProduct(initialData.id, payload, selectedFile, token);
+        // ขั้นตอน: อัปเดต (Store จะจัดการอัปโหลดรูปก่อนถ้ามี selectedFile)
+        await updateProduct(initialData.id, cleanPayload, selectedFile, token);
       } else {
-        await createProduct(payload, selectedFile!, token);
+        // ขั้นตอน: สร้างใหม่
+        await createProduct(cleanPayload, selectedFile!, token);
       }
+
       onSuccess();
-    } catch (error) {
-      setFormError("SYSTEM_SYNC_FAILED");
-      console.log(error);
+      onClose();
+    } catch (error: unknown) {
+      console.error("Submission Error:", error);
+      // ดึง Error Message จาก Backend มาโชว์ (ถ้ามี)
+      const msg = "SYSTEM_SYNC_FAILED";
+      setFormError(msg.toUpperCase());
     }
   };
 
   return (
     <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
-      <div className="bg-white w-full max-w-lg border border-black shadow-[20px_20px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-white w-full max-w-lg border-2 border-black shadow-[20px_20px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex justify-between items-center p-8 border-b border-zinc-100 bg-zinc-50">
+        <div className="flex justify-between items-center p-8 border-b-2 border-zinc-100 bg-zinc-50">
           <div className="space-y-1">
             <p className="text-[9px] font-black text-zinc-400 tracking-[0.4em] uppercase">
               Inventory_Update
@@ -100,17 +118,17 @@ export const ProductForm = ({
 
         <form
           onSubmit={handleSubmit}
-          className="p-10 space-y-8 bg-white max-h-[80vh] overflow-y-auto"
+          className="p-10 space-y-8 bg-white max-h-[75vh] overflow-y-auto"
         >
           <div className="space-y-6">
-            {/* Image Upload Area with Remove Option */}
+            {/* Image Section */}
             <div className="group">
               <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black transition-colors">
                 Visual_Asset_Upload
               </label>
               <div className="mt-2 relative">
                 {previewUrl ? (
-                  <div className="relative h-40 w-full border-2 border-black overflow-hidden group/img">
+                  <div className="relative h-48 w-full border-2 border-black overflow-hidden group/img">
                     <img
                       src={previewUrl}
                       alt="Preview"
@@ -121,7 +139,7 @@ export const ProductForm = ({
                       onClick={handleRemoveImage}
                       className="absolute top-2 right-2 bg-black text-white p-2 opacity-0 group-hover/img:opacity-100 transition-opacity cursor-pointer hover:bg-red-500"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 ) : (
@@ -139,7 +157,7 @@ export const ProductForm = ({
                     >
                       <Upload size={24} className="text-zinc-400" />
                       <span className="text-[10px] font-black uppercase mt-2 text-zinc-400">
-                        Select_Image
+                        Select_Image_File
                       </span>
                     </label>
                   </>
@@ -147,7 +165,7 @@ export const ProductForm = ({
               </div>
             </div>
 
-            {/* Inputs */}
+            {/* Name Input */}
             <div className="group">
               <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black">
                 Product_Identity
@@ -163,6 +181,7 @@ export const ProductForm = ({
               />
             </div>
 
+            {/* Price & Stock */}
             <div className="grid grid-cols-2 gap-10">
               <div className="group">
                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black">
@@ -171,6 +190,7 @@ export const ProductForm = ({
                 <input
                   className="w-full border-b-2 border-zinc-100 py-3 text-sm font-black focus:border-black outline-none transition-all"
                   type="number"
+                  step="0.01"
                   value={formData.price}
                   onChange={(e) =>
                     setFormData({ ...formData, price: e.target.value })
@@ -194,6 +214,22 @@ export const ProductForm = ({
               </div>
             </div>
 
+            {/* Description */}
+            <div className="group">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black">
+                Details_Specification
+              </label>
+              <textarea
+                className="w-full border-b-2 border-zinc-100 py-3 text-xs font-medium focus:border-black outline-none transition-all resize-none h-20"
+                placeholder="DESCRIPTION..."
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </div>
+
+            {/* Category Select */}
             <div className="group">
               <label className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-black">
                 Classification
@@ -222,37 +258,35 @@ export const ProductForm = ({
             </div>
           </div>
 
-          {/* Minimal Footer */}
-          <div className="space-y-4">
+          {/* Footer Actions */}
+          <div className="pt-4 space-y-4">
             {formError && (
-              <div className="text-[10px] font-black text-red-500 uppercase tracking-widest animate-pulse">
-                Error // {formError}
+              <div className="text-[10px] font-black text-red-500 uppercase tracking-widest p-3 bg-red-50 border border-red-200">
+                System_Error // {formError}
               </div>
             )}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-8 py-5 border border-zinc-200 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-zinc-50 hover:border-black transition-all cursor-pointer"
+                className="flex-1 px-8 py-5 border-2 border-black text-[10px] font-black uppercase tracking-[0.3em] hover:bg-zinc-100 transition-all cursor-pointer"
               >
-                Discard
+                Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-1 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all cursor-pointer shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)] active:shadow-none ${
-                  formError
-                    ? "bg-red-500 text-white"
-                    : "bg-black text-white hover:bg-zinc-800 disabled:bg-zinc-300"
+                className={`flex-1 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all cursor-pointer shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
+                  loading
+                    ? "bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none"
+                    : "bg-black text-white hover:bg-zinc-800"
                 }`}
               >
                 {loading
-                  ? "System_Syncing..."
-                  : formError
-                    ? "Retry_Push"
-                    : initialData
-                      ? "Commit_Changes"
-                      : "Push_To_Cloud"}
+                  ? "Syncing..."
+                  : initialData
+                    ? "Commit_Changes"
+                    : "Push_To_Cloud"}
               </button>
             </div>
           </div>
