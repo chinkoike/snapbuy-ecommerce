@@ -44,7 +44,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
       console.log(err);
 
       set({ loading: false });
-      return null;
+      return;
     }
   },
   // --- Client Side ---

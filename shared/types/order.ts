@@ -54,7 +54,7 @@ export interface OrderStore {
   isUploading: boolean; // แยก loading ปกติกับตอนอัปโหลดไฟล์
   error: string | null;
 
-  fetchOrders: (token: string) => Promise<void>;
+  fetchOrders: (token: string) => Promise<void> | null;
   fetchOrdersUser: (token: string) => Promise<void>;
   updateOrderStatus: (
     orderId: string,
