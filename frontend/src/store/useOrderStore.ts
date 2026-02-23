@@ -101,13 +101,14 @@ export const useOrderStore = create<OrderStore>((set) => ({
     try {
       await orderService.cancelOrder(orderId, token);
 
-      // อัปเดต State ในเครื่องทันทีไม่ต้องโหลดใหม่ (Optimistic Update)
+      // ✅ เปลี่ยนจาก myOrders เป็น orders ตามที่ TypeScript แนะนำ
       set((state) => ({
-        myOrders: state.orders.map((order) =>
+        orders: state.orders.map((order) =>
           order.id === orderId ? { ...order, status: "CANCELLED" } : order,
         ),
         loading: false,
       }));
+
       return { success: true };
     } catch (error) {
       set({ loading: false });

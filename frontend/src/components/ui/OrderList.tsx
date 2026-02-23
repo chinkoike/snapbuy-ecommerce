@@ -3,6 +3,7 @@ import type { OrderListProps } from "../../../../shared/types/order";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useOrderStore } from "../../store/useOrderStore";
+import { CircleAlert } from "lucide-react";
 
 export const OrderList: React.FC<OrderListProps> = ({
   myOrders,
@@ -59,7 +60,7 @@ export const OrderList: React.FC<OrderListProps> = ({
           <div className="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="text-center">
               <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                ⚠️
+                <CircleAlert />
               </div>
               <h3 className="text-xl font-black text-gray-900 mb-2">
                 Cancel Order?

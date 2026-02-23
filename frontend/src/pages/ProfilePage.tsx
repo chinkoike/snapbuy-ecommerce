@@ -127,7 +127,7 @@ const ProfilePage = () => {
 
             {/* ✅ Order List with filtered data */}
             <OrderList
-              myOrders={myOrders}
+              myOrders={orders}
               isLoading={isOrdersLoading}
               onSelectOrder={(order) => setSelectedOrder(order)}
             />
