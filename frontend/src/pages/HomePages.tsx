@@ -10,7 +10,7 @@ const HomePage = () => {
   const { products, fetchProducts, loading } = useProductStore();
 
   useEffect(() => {
-    fetchProducts(); // โหลดข้อมูลสินค้าเมื่อหน้าจอถูกเปิด
+    fetchProducts();
   }, [fetchProducts]);
 
   return (
@@ -47,12 +47,9 @@ const HomePage = () => {
 
             {/* Product Grid Area */}
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-40">
-                <div className="w-12 h-12 border-2 border-zinc-200 border-t-black rounded-full animate-spin mb-4"></div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.5em] animate-pulse">
-                  Loading Inventory...
-                </p>
-              </div>
+              Array.from({ length: 8 }).map((_, index) => (
+                <ProductSkeleton key={index} />
+              ))
             ) : products && products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
                 {products.map((product, index) => (
@@ -74,9 +71,8 @@ const HomePage = () => {
             )}
           </section>
         ) : (
-          /* ----- Guest View: ธีมเน้นความ Impact ขาวดำจัดจ้าน ----- */
+          /* ----- Guest View:  ----- */
           <section className="animate-in zoom-in-95 duration-500">
-            {/* Hero Section */}
             <div className="bg-black text-white p-8 md:p-20 text-center mb-16 rounded-sm">
               <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase mb-6 leading-none">
                 Snap
@@ -95,7 +91,7 @@ const HomePage = () => {
               </button>
             </div>
 
-            {/* Popular Products */}
+            {/* Popular Products Header */}
             <div className="flex items-center gap-4 mb-10">
               <h3 className="text-xl font-black uppercase tracking-[0.2em]">
                 Essentials
@@ -103,16 +99,22 @@ const HomePage = () => {
               <div className="h-0.5 flex-1 bg-black"></div>
             </div>
 
+            {/* Grid แสดงสินค้า */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-              {products?.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+              {loading
+                ? Array.from({ length: 8 }).map((_, index) => (
+                    <ProductSkeleton key={index} />
+                  ))
+                : // แสดงสินค้าจริงเมื่อโหลดเสร็จ
+                  products?.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
             </div>
           </section>
         )}
       </main>
 
-      {/* Footer จบงานแบบขาวดำ */}
+      {/* Footer  */}
       <footer className="border-t border-gray-200 py-10 text-center">
         <p className="text-[10px] text-gray-400 uppercase tracking-[0.5em]">
           © 2026 SnapBuy — All Rights Reserved
@@ -121,5 +123,11 @@ const HomePage = () => {
     </div>
   );
 };
-
+const ProductSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="bg-gray-200 aspect-square rounded-sm mb-4"></div>
+    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+  </div>
+);
 export default HomePage;
