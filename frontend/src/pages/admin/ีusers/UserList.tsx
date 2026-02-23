@@ -45,7 +45,7 @@ export const UserList = () => {
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
         <div className="animate-pulse font-black tracking-[0.4em] uppercase opacity-20">
-          Syncing_User_Database...
+          Syncing Data...
         </div>
       </div>
     );

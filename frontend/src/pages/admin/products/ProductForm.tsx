@@ -50,6 +50,9 @@ export const ProductForm = ({
 
   const handleRemoveImage = () => {
     setSelectedFile(null);
+    if (previewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(previewUrl);
+    }
     setPreviewUrl(initialData?.imageUrl || "");
     const input = document.getElementById("file-upload") as HTMLInputElement;
     if (input) input.value = "";
