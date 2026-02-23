@@ -30,12 +30,7 @@ export const orderService = {
     return response.data; // Backend ต้องส่งข้อมูล Order กลับมา
   },
   // ดึงข้อมูลออเดอร์ทั้งหมด
-  getAllOrders: async (token: string): Promise<OrderData[]> => {
-    const response = await api.get("/api/admin/orders", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  },
+
   uploadOrderSlip: async (orderId: string, file: File, token: string) => {
     const formData = new FormData();
     formData.append("slip", file); // ชื่อ "slip" ต้องตรงกับ Backend
@@ -62,7 +57,12 @@ export const orderService = {
     );
     return res.data;
   },
-
+  getAllOrders: async (token: string): Promise<OrderData[]> => {
+    const response = await api.get("/api/admin/orders", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  },
   // อัปเดตสถานะออเดอร์
   updateStatus: async (
     orderId: string,
