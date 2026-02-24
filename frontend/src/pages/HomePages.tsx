@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
-import { useProductStore } from "../store/useProductStore"; // ดึงข้อมูลสินค้าจาก Store
+import { useProductStore } from "../store/useProductStore";
 import { useEffect } from "react";
 import { ProductCard } from "../components/ui/ProductCard";
 
@@ -52,15 +52,17 @@ const HomePage = () => {
               ))
             ) : products && products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                {products.map((product, index) => (
-                  <div
-                    key={product.id}
-                    className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-                    style={{ animationDelay: `${index * 100}ms` }} // ให้ค่อยๆ โผล่มาทีละชิ้น
-                  >
-                    <ProductCard product={product} />
-                  </div>
-                ))}
+                {products
+                  .filter((product) => product.isActive === true)
+                  .map((product, index) => (
+                    <div
+                      key={product.id}
+                      className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+                      style={{ animationDelay: `${index * 100}ms` }} // ให้ค่อยๆ โผล่มาทีละชิ้น
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
               </div>
             ) : (
               <div className="py-20 text-center border border-dashed border-zinc-300">
@@ -124,10 +126,19 @@ const HomePage = () => {
   );
 };
 const ProductSkeleton = () => (
-  <div className="animate-pulse">
-    <div className="bg-gray-200 aspect-square rounded-sm mb-4"></div>
-    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+  <div className="animate-pulse space-y-4">
+    <div className="relative aspect-square w-full bg-zinc-200 rounded-sm overflow-hidden">
+      <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+    </div>
+
+    <div className="space-y-2 px-1">
+      <div className="h-3 bg-zinc-200 rounded-full w-2/3"></div>
+
+      <div className="flex justify-between items-center">
+        <div className="h-3 bg-zinc-200 rounded-full w-1/4"></div>
+        <div className="h-3 bg-zinc-300 rounded-full w-1/6"></div>
+      </div>
+    </div>
   </div>
 );
 export default HomePage;

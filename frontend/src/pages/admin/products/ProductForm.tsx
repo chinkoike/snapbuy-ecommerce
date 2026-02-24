@@ -53,7 +53,13 @@ export const ProductForm = ({
     if (previewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
-    setPreviewUrl(initialData?.imageUrl || "");
+
+    setPreviewUrl("");
+
+    setFormData((prev) => ({
+      ...prev,
+      imageUrl: null,
+    }));
     const input = document.getElementById("file-upload") as HTMLInputElement;
     if (input) input.value = "";
   };

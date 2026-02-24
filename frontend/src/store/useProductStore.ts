@@ -54,14 +54,14 @@ export const useProductStore = create<ProductState>((set) => ({
   updateProduct: async (id, data, file, token) => {
     set({ loading: true, error: null });
     try {
-      // ✅ เปลี่ยนจาก let เป็น const เพราะเราแค่ "แก้ไข้อ็อบเจกต์" ไม่ได้ "เปลี่ยนอ็อบเจกต์ใหม่ทั้งก้อน"
       const payload = { ...data };
 
       if (file) {
         const { imageUrl } = await ProductService.uploadImage(file, token);
         payload.imageUrl = imageUrl; // อันนี้คือการแก้ property ข้างใน const ยอมให้ทำได้ครับ
+      } else if (data.imageUrl === "" || data.imageUrl === null) {
+        payload.imageUrl = null; // ส่งค่า null ไปบอก Backend ว่าให้ลบรูปออก
       }
-
       const updatedProduct = await ProductService.update(id, payload, token);
 
       set((state) => ({

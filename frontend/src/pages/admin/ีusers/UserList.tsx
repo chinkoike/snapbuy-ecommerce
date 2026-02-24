@@ -106,7 +106,7 @@ export const UserList = () => {
                   >
                     <td className="p-6 border-r border-zinc-100">
                       <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 border-2 border-black flex items-center justify-center font-black text-xl bg-zinc-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
+                        <div className="w-12 h-12 border-2 border-black flex items-center justify-center font-black text-xl bg-zinc-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform">
                           {user.email[0].toUpperCase()}
                         </div>
                         <div className="space-y-1">
@@ -183,7 +183,7 @@ export const UserList = () => {
 
       {/* --- Detail Modal (Brutalist style) --- */}
       {isDetailOpen && selectedUser && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
           <div className="bg-white border-4 border-black w-full max-w-2xl shadow-[30px_30px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-8 border-b-4 border-black bg-zinc-50 flex justify-between items-center">
               <div className="space-y-1">
@@ -196,7 +196,7 @@ export const UserList = () => {
               </div>
               <button
                 onClick={() => setIsDetailOpen(false)}
-                className="w-12 h-12 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer rotate-0 hover:rotate-90 transition-all duration-300"
+                className="w-12 h-12 border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors cursor-pointer rotate-0 hover:rotate-90 duration-300"
               >
                 <X size={24} />
               </button>
@@ -270,7 +270,7 @@ export const UserList = () => {
 
       {/* --- Confirm Block Modal (Small Brutalist) --- */}
       {confirmModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
+        <div className="fixed inset-0 z-110 flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
           <div className="bg-white border-4 border-black w-full max-w-sm p-10 text-center shadow-[20px_20px_0px_0px_rgba(255,255,255,0.1)]">
             <div className="w-16 h-16 mx-auto mb-6 bg-red-100 border-2 border-red-500 text-red-600 flex items-center justify-center rotate-3 shadow-[6px_6px_0px_0px_rgba(239,68,68,0.2)]">
               <AlertCircle size={32} />
