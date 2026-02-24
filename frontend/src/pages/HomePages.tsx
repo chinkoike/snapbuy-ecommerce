@@ -46,31 +46,33 @@ const HomePage = () => {
             </div>
 
             {/* Product Grid Area */}
-            {loading ? (
-              Array.from({ length: 8 }).map((_, index) => (
-                <ProductSkeleton key={index} />
-              ))
-            ) : products && products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                {products
-                  .filter((product) => product.isActive === true)
-                  .map((product, index) => (
-                    <div
-                      key={product.id}
-                      className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-                      style={{ animationDelay: `${index * 100}ms` }} // ให้ค่อยๆ โผล่มาทีละชิ้น
-                    >
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="py-20 text-center border border-dashed border-zinc-300">
-                <p className="text-xs uppercase tracking-widest text-zinc-400">
-                  No items available in this collection.
-                </p>
-              </div>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+              {loading ? (
+                Array.from({ length: 8 }).map((_, index) => (
+                  <ProductSkeleton key={index} />
+                ))
+              ) : products && products.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+                  {products
+                    .filter((product) => product.isActive === true)
+                    .map((product, index) => (
+                      <div
+                        key={product.id}
+                        className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+                        style={{ animationDelay: `${index * 100}ms` }} // ให้ค่อยๆ โผล่มาทีละชิ้น
+                      >
+                        <ProductCard product={product} />
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="py-20 text-center border border-dashed border-zinc-300">
+                  <p className="text-xs uppercase tracking-widest text-zinc-400">
+                    No items available in this collection.
+                  </p>
+                </div>
+              )}
+            </div>
           </section>
         ) : (
           /* ----- Guest View:  ----- */
@@ -108,9 +110,11 @@ const HomePage = () => {
                     <ProductSkeleton key={index} />
                   ))
                 : // แสดงสินค้าจริงเมื่อโหลดเสร็จ
-                  products?.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
+                  products
+                    .filter((product) => product.isActive === true)
+                    .map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
             </div>
           </section>
         )}
