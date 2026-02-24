@@ -1,107 +1,44 @@
----
-
 # 🚀 SnapBuy – Fullstack E-Commerce Web Application
 
-**SnapBuy** คือโปรเจกต์ E-Commerce แบบ Fullstack ที่ออกแบบมาเพื่อจำลองระบบขายสินค้าในโลกจริง
-ครอบคลุมตั้งแต่ Authentication, Shopping Cart, Order Management ไปจนถึงระบบ Admin หลังบ้าน
+**SnapBuy** is a production-grade Fullstack E-Commerce platform designed to simulate real-world retail workflows. This project focuses on **System Architecture, Data Integrity, and Secure Transactions**, providing a seamless experience for both customers and administrators.
 
-โปรเจกต์นี้พัฒนาโดยเน้น **System Flow, Data Integrity และ Real-world Use Case** มากกว่าการทำ UI เพียงอย่างเดียว
+Built with the latest tech stack (React 19, Tailwind v4, Prisma), SnapBuy demonstrates a modern approach to building scalable web applications.
 
 ---
 
-## 🔗 Live Demo
+## 🔗 Deployment Links
 
-- **Frontend:** [https://snapbuy-ecommerce.vercel.app/]
-- **Backend API:** [https://snapbuy-ecommerce-nqk9.onrender.com]
+- **Frontend (UI):** [https://snapbuy-ecommerce.vercel.app/]
+- **Backend (API):** [https://snapbuy-ecommerce-nqk9.onrender.com]
 
-### 👤 Demo Accounts
+### 👤 Demo Credentials
 
-```txt
-User:
-email: user@email.com
-password: User123456
-
-Admin:
-email: admin@email.com
-password: Admin123
-```
-
-> 💡 _Admin account ใช้ user เดียวกัน แต่กำหนด role = ADMIN ใน database_
+| Role      | Email             | Password     |
+| --------- | ----------------- | ------------ |
+| **User**  | `user@email.com`  | `User123456` |
+| **Admin** | `admin@email.com` | `Admin123`   |
 
 ---
 
 ## ✨ Key Features
 
-### 🔐 Authentication & Authorization
+### 🔐 Authentication & Security
 
-- Login / Logout ผ่าน Auth0
-- JWT verification ฝั่ง Backend
-- Role-based access control (USER / ADMIN)
+- **Auth0 Implementation:** Secure identity management with SSO capabilities.
+- **RBAC (Role-Based Access Control):** Dedicated views and API protection for `USER` and `ADMIN` roles.
+- **JWT Protection:** All sensitive backend routes are protected via Bearer Token validation.
 
-### 🛍 Product & Catalog
+### 🛍 Product Management
 
-- แสดงรายการสินค้า
-- Filter ตามหมวดหมู่
-- Search สินค้า (Backend query optimized)
-- Product detail page
+- **Dynamic Catalog:** High-performance product listing with server-side filtering and search.
+- **Admin Dashboard:** Full CRUD (Create, Read, Update, Delete) suite for inventory management.
+- **Image Optimization:** Automated image processing and hosting via **Cloudinary**.
 
-### 🛒 Shopping Cart
+### 🛒 Shopping & Orders
 
-- เพิ่ม / ลดจำนวนสินค้า
-- คำนวณราคารวมแบบ Real-time
-- จัดการ state ด้วย Zustand
-- Persist cart เมื่อ refresh หน้าเว็บ
-
-### 📦 Order System
-
-- สร้าง Order จากตะกร้าสินค้า
-- จัดการสถานะ Order (PENDING / PAID / COMPLETED)
-- User ดูประวัติการสั่งซื้อได้
-
-### 💳 Payment Evidence (Manual Verification)
-
-- แสดงยอดที่ต้องชำระ
-- อัปโหลดสลิปการโอนเงิน
-- Admin ตรวจสอบและอนุมัติคำสั่งซื้อ
-
-### 🧑‍💼 Admin Panel
-
-- เพิ่ม / แก้ไข / ลบสินค้า
-- อัปโหลดรูปสินค้า
-- ดูรายการคำสั่งซื้อทั้งหมด
-- อัปเดตสถานะ Order
-
-### 🖼 Image Management
-
-- จัดเก็บรูปสินค้าและสลิปผ่าน Cloudinary
-- รองรับ image optimization อัตโนมัติ
-
----
-
-## 🔄 System Flow (High-Level)
-
-1. ผู้ใช้ Login ผ่าน Auth0
-2. Frontend ขอ Access Token
-3. Backend verify JWT และ sync user เข้า database
-4. ผู้ใช้เลือกสินค้า → เพิ่มลง Cart
-5. Checkout → สร้าง Order (PENDING)
-6. ผู้ใช้อัปโหลดหลักฐานการชำระเงิน
-7. Admin ตรวจสอบและอัปเดตสถานะ Order
-
----
-
-## 🏗 Project Architecture
-
-```
-SnapBuy
-├── frontend   (React + TypeScript + Vite)
-├── backend    (Node.js + Express + Prisma)
-└── database   (PostgreSQL)
-```
-
-- **Frontend:** Deploy บน Vercel
-- **Backend:** Deploy บน Render
-- **Database:** PostgreSQL (Hosted on Supabase)
+- **Real-time Cart:** Managed with **Zustand** for high performance and local persistence.
+- **Order Lifecycle:** Complete flow from `PENDING` ⮕ `PAID` ⮕ `COMPLETED`.
+- **Payment Evidence:** Manual slip upload system for transaction verification.
 
 ---
 
@@ -109,106 +46,72 @@ SnapBuy
 
 ### Frontend
 
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- Zustand
-- React Router DOM v7
-- Auth0 React SDK
+- **Framework:** React 19 (Functional Components & Hooks)
+- **Language:** TypeScript (Type-safe development)
+- **Styling:** Tailwind CSS v4 (Modern Utility-first CSS)
+- **State Management:** Zustand (Lightweight & Scalable)
+- **Routing:** React Router DOM v7
 
 ### Backend
 
-- Node.js
-- Express 5
-- Prisma ORM
-- PostgreSQL
-- Auth0 JWT Bearer Middleware
-- Cloudinary + Multer
+- **Runtime:** Node.js (Express 5)
+- **ORM:** Prisma (Type-safe Database client)
+- **Database:** PostgreSQL (Hosted on Supabase)
+- **Storage:** Cloudinary API (Media Management)
+- **Auth:** Auth0 SDK & Express-jwt
 
 ---
 
-## 🗄 Database Schema (Simplified)
+## 🔄 System Architecture & Flow
 
-- **User**
-  - auth0Id
-  - email
-  - role (USER / ADMIN)
-
-- **Product**
-  - name
-  - price
-  - category
-  - imageUrl
-
-- **Order**
-  - userId
-  - totalPrice
-  - status
-
-- **OrderItem**
-  - orderId
-  - productId
-  - quantity
-  - price
+1. **Identity:** Users authenticate via Auth0 ⮕ Backend syncs/verifies User profile.
+2. **Shopping:** User adds items to Cart (State persisted in LocalStorage via Zustand).
+3. **Checkout:** User submits Order ⮕ Status set to `PENDING`.
+4. **Payment:** User uploads Transfer Slip ⮕ Image stored on Cloudinary ⮕ Status set to `PAID`.
+5. **Fulfillment:** Admin reviews evidence ⮕ Approves Order ⮕ Status set to `COMPLETED`.
 
 ---
 
-## 🤔 Why This Tech Stack?
+## 🧠 Technical Challenges & Solutions
 
-- **Auth0** – ลดความซับซ้อนด้าน Security และ Authentication Flow
-- **Prisma ORM** – Type-safe database access ลด runtime error
-- **Zustand** – Lightweight state management เหมาะกับ cart logic
-- **Cloudinary** – จัดการ image upload และ optimization ได้ง่าย
-- **PostgreSQL** – รองรับ relational data ที่ซับซ้อนในระบบ e-commerce
+### 1. Persistent Cart State
+
+**Challenge:** Keeping the shopping cart data intact after page refreshes without excessive database calls.
+**Solution:** Implemented **Zustand with Middleware Persist**, allowing the cart state to sync with `localStorage` efficiently.
+
+### 2. Secure Image Uploads
+
+**Challenge:** Handling product images and payment slips securely and performantly.
+**Solution:** Integrated **Multer** with **Cloudinary Storage Engine**, ensuring images are optimized and served via CDN before being saved as URLs in PostgreSQL.
+
+### 3. Data Integrity with Prisma
+
+**Challenge:** Managing complex relations between Users, Orders, and OrderItems.
+**Solution:** Leveraged **Prisma Transactions** to ensure that an Order and its multiple Items are created atomically—either both succeed or both fail.
 
 ---
 
 ## 🖼 Screenshots
 
->
-
-![Shop](./screenshots/shop.png)
-![Cart](./screenshots/cartpage.png)
-![Checkout](./screenshots/checkout.png)
-![Order](./screenshots/slip.png)
-
-- **Admin Dashboard**
-
-![Admin Products](./screenshots/admin-product.png)
-![Admin Orders](./screenshots/admin-order.png)
-
----
-
-## 📦 Local Development
-
-### Frontend
-
-```bash
-npm install
-npm run dev
-```
-
-### Backend
-
-```bash
-npm install
-npx prisma migrate dev
-npm run dev
-```
-
----
-
-## 📌 Notes
-
-- ระบบชำระเงินในโปรเจกต์นี้เป็น **Manual Verification**
-- ออกแบบเพื่อโฟกัสที่ **Order Flow และ Admin Management**
-- พร้อมขยายต่อเป็น Credit Card / Payment Gateway ได้ในอนาคต
+<div align="center">
+  <h3>📱 User Experience</h3>
+  <img src="./screenshots/shop.png" width="400" alt="Shop">
+  <img src="./screenshots/cartpage.png" width="400" alt="Cart">
+  <img src="./screenshots/checkout.png" width="400" alt="Checkout">
+  <img src="./screenshots/slip.png" width="400" alt="Payment">
+  
+  <h3>⚙️ Admin Management</h3>
+  <img src="./screenshots/admin-product.png" width="400" alt="Admin Products">
+  <img src="./screenshots/admin-order.png" width="400" alt="Admin Orders">
+</div>
 
 ---
 
 ## 👨‍💻 Author
 
-**Computer Science Graduate**
-สนใจงานด้าน **Full-stack / Backend Development**
+**[chindanai]**
+_Computer Science Graduate_
+
+> Currently seeking a **Full-stack / Backend Developer** position. I am passionate about building clean, maintainable, and efficient web solutions.
 
 ---
