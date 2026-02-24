@@ -165,19 +165,17 @@ SnapBuy
 
 ## 🖼 Screenshots
 
-> 📌 _แนะนำใส่ 4–6 รูปเท่านั้น_
+>
 
-- Product Listing
-- Product Detail
-- Shopping Cart
-- Order History
+![Shop](./screenshots/shop.png)
+![Cart](./screenshots/cartpage.png)
+![Checkout](./screenshots/checkout.png)
+![Order](./screenshots/slip.png)
+
 - **Admin Dashboard**
 
-```md
-![Products](./screenshots/products.png)
-![Cart](./screenshots/cart.png)
-![Admin](./screenshots/admin.png)
-```
+![Admin Products](./screenshots/admin-product.png)
+![Admin Orders](./screenshots/admin-order.png)
 
 ---
 
