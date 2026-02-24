@@ -122,9 +122,11 @@ export const ProductList = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-                {products?.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+                {products
+                  .filter((product) => product.isActive === true)
+                  .map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
               </div>
 
               {totalPages > 1 && (
