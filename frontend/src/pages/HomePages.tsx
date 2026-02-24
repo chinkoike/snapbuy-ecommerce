@@ -46,27 +46,29 @@ const HomePage = () => {
             </div>
 
             {/* Product Grid Area */}
+            {/* ✅ 1. ใช้ Grid นอกสุดตัวเดียวคุมทั้งหมด */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
               {loading ? (
+                /* ตอนโหลด: แสดง Skeleton 8 อัน กระจายตัวตาม Grid ด้านบน */
                 Array.from({ length: 8 }).map((_, index) => (
                   <ProductSkeleton key={index} />
                 ))
-              ) : products && products.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
-                  {products
-                    .filter((product) => product.isActive === true)
-                    .map((product, index) => (
-                      <div
-                        key={product.id}
-                        className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-                        style={{ animationDelay: `${index * 100}ms` }} // ให้ค่อยๆ โผล่มาทีละชิ้น
-                      >
-                        <ProductCard product={product} />
-                      </div>
-                    ))}
-                </div>
+              ) : products && products.filter((p) => p.isActive).length > 0 ? (
+                /* ✅ 2. เอา div grid-cols ที่ซ้อนอยู่ออกไปเลย (ใช้ร่วมกับด้านบน) */
+                products
+                  .filter((product) => product.isActive === true)
+                  .map((product, index) => (
+                    <div
+                      key={product.id}
+                      className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ))
               ) : (
-                <div className="py-20 text-center border border-dashed border-zinc-300">
+                /* ✅ 3. ถ้าไม่มีสินค้า ให้กินพื้นที่เต็มแถว (col-span-full) */
+                <div className="col-span-full py-20 text-center border border-dashed border-zinc-300">
                   <p className="text-xs uppercase tracking-widest text-zinc-400">
                     No items available in this collection.
                   </p>
