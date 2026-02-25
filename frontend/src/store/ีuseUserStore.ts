@@ -27,7 +27,6 @@ export const useUserStore = create<ExtendedUserState>((set) => ({
     try {
       await UserService.toggleStatus(id, token);
 
-      // ✅ อัปเดต State ในเครื่องทันทีเพื่อให้ UI เปลี่ยนสี/สถานะ โดยไม่ต้องโหลดใหม่
       set((state) => ({
         users: state.users.map((u) =>
           u.id === id ? { ...u, isActive: !u.isActive } : u,
@@ -35,7 +34,7 @@ export const useUserStore = create<ExtendedUserState>((set) => ({
       }));
     } catch (err) {
       set({ error: "Could not update user status" });
-      throw err; // โยน error กลับไปเพื่อให้หน้า UI รู้ว่าไม่ต้องหยุด loading
+      throw err;
     }
   },
 }));

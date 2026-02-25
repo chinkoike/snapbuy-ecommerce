@@ -30,7 +30,6 @@ export const ProductForm = ({
 
   useEffect(() => {
     fetchCategories();
-    // Cleanup preview URL เมื่อปิด Component
     return () => {
       if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
@@ -76,11 +75,11 @@ export const ProductForm = ({
     try {
       const token = await getAccessTokenSilently();
 
-      // ✅ ปรับเลขให้เป็น Integer ตาม Prisma Schema
+      // ปรับเลขให้เป็น Integer ตาม Prisma Schema
       const cleanPayload = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        price: Math.round(parseFloat(formData.price)) || 0, // ป้องกันทศนิยมไปทำ Prisma พัง
+        price: Math.round(parseFloat(formData.price)) || 0,
         stock: Math.round(parseFloat(formData.stock)) || 0,
         categoryId: formData.categoryId,
       };
@@ -88,7 +87,6 @@ export const ProductForm = ({
       if (initialData) {
         await updateProduct(initialData.id, cleanPayload, selectedFile, token);
       } else {
-        // สำหรับ Create ต้องมั่นใจว่า selectedFile ไม่เป็น null
         if (!selectedFile) throw new Error("IMAGE_REQUIRED");
         await createProduct(cleanPayload, selectedFile, token);
       }

@@ -5,14 +5,14 @@ import type { Prisma } from "@prisma/client";
 
 export const getMyOrders = async (req: Request, res: Response) => {
   try {
-    // 1. ดึง Auth0 ID จาก Token (Middleware: express-oauth2-jwt-bearer)
+    //  ดึง Auth0 ID จาก Token (Middleware: express-oauth2-jwt-bearer)
     const auth0Id = (req as any).auth?.payload?.sub;
 
     if (!auth0Id) {
       return res.status(401).json({ error: "Unauthorized: No token provided" });
     }
 
-    // 2. หา User ใน DB ของเราก่อน เพื่อเอา UUID จริงๆ มาใช้
+    // หา User ใน DB ของเราก่อน เพื่อเอา UUID จริงๆ มาใช้
     const user = await prisma.user.findUnique({
       where: { auth0Id: auth0Id },
     });
@@ -21,7 +21,7 @@ export const getMyOrders = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found in database" });
     }
 
-    // 3. ดึงเฉพาะ Order ที่เป็นของ User คนนี้
+    //  ดึงเฉพาะ Order ที่เป็นของ User คนนี้
     const orders = await prisma.order.findMany({
       where: {
         userId: user.id, // ใช้ UUID ของ User จาก DB
@@ -50,7 +50,7 @@ export const getOrderById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const auth0Id = (req as any).auth?.payload?.sub; // นี่คือ "auth0|..."
 
-    // 1. ไปหา User ใน DB ก่อนว่า auth0|... คนนี้ มี ID ในระบบเราคืออะไร
+    // ไปหา User ใน DB ก่อนว่า auth0|... คนนี้ มี ID ในระบบเราคืออะไร
     const user = await prisma.user.findUnique({
       where: { auth0Id: auth0Id }, // สมมติว่าในตาราง User คุณเก็บ auth0Id ไว้
     });
@@ -59,7 +59,7 @@ export const getOrderById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User not found in system" });
     }
 
-    // 2. ดึง Order ออกมา
+    // ดึง Order ออกมา
     const order = await prisma.order.findUnique({
       where: { id: id as string },
     });
@@ -68,7 +68,7 @@ export const getOrderById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // 3. เทียบ ID จาก Database กับ Database (UUID vs UUID)
+    // เทียบ ID จาก Database กับ Database (UUID vs UUID)
     if (order.userId !== user.id) {
       console.log(`Mismatch Fixed: ${order.userId} vs ${user.id}`);
       return res.status(403).json({ error: "Access denied" });
@@ -102,14 +102,14 @@ export const createOrder = async (req: Request, res: Response) => {
 
     const result = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        // 2. เช็คสินค้าและตัดสต็อก
+        // เช็คสินค้าและตัดสต็อก
         for (const item of items) {
           const product = await tx.product.findUnique({
             where: { id: item.productId },
           });
 
           if (!product || product.stock < item.quantity) {
-            // 💡 ถ้าใน item ไม่มี name ให้ดึงจาก product ที่หาเจอใน DB แทน
+            //  ถ้าใน item ไม่มี name ให้ดึงจาก product ที่หาเจอใน DB แทน
             throw new Error(
               `Product ${product?.name || item.productId} is out of stock.`,
             );
@@ -121,7 +121,7 @@ export const createOrder = async (req: Request, res: Response) => {
           });
         }
 
-        // 3. สร้าง Order (ใช้ user.id ที่หาได้จาก DB แน่นอน)
+        // สร้าง Order (ใช้ user.id ที่หาได้จาก DB แน่นอน)
         return await tx.order.create({
           data: {
             userId: user.id, // มั่นใจได้แล้วว่า ID นี้มีอยู่จริง
@@ -160,7 +160,7 @@ export const cancelOrder = async (req: Request, res: Response) => {
   }
 
   try {
-    // 1. หา User ใน DB ของเราด้วย auth0Id (sub)
+    //  หา User ใน DB ของเราด้วย auth0Id (sub)
     const user = await prisma.user.findUnique({
       where: { auth0Id: auth0Id },
     });
@@ -169,11 +169,11 @@ export const cancelOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found in database" });
     }
 
-    // 2. หา Order ที่ตรงกับ ID และเป็นของ User คนนี้ + สถานะต้องเป็น PENDING
+    // หา Order ที่ตรงกับ ID และเป็นของ User คนนี้ + สถานะต้องเป็น PENDING
     const order = await prisma.order.findFirst({
       where: {
         id: id as string,
-        userId: user.id, // ใช้ ID จากการหาในขั้นตอนที่ 1
+        userId: user.id, // ใช้ ID User
         status: "PENDING",
       },
       include: { items: true }, // ดึงสินค้าในออเดอร์มาเพื่อคืนสต็อก
@@ -185,15 +185,15 @@ export const cancelOrder = async (req: Request, res: Response) => {
         .json({ message: "ไม่พบออเดอร์ที่สามารถยกเลิกได้" });
     }
 
-    // 3. เริ่มกระบวนการ Transaction (ต้องสำเร็จทั้งหมด หรือไม่สำเร็จเลย)
+    // เริ่มกระบวนการ Transaction (ต้องสำเร็จทั้งหมด หรือไม่สำเร็จเลย)
     await prisma.$transaction(async (tx) => {
-      // A. อัปเดตสถานะออเดอร์เป็น CANCELLED
+      // อัปเดตสถานะออเดอร์เป็น CANCELLED
       await tx.order.update({
         where: { id: id as string },
         data: { status: "CANCELLED" },
       });
 
-      // B. วนลูปคืนสต็อกสินค้าตามจำนวนที่สั่ง
+      //  วนลูปคืนสต็อกสินค้าตามจำนวนที่สั่ง
       for (const item of order.items) {
         await tx.product.update({
           where: { id: item.productId },
@@ -223,11 +223,11 @@ export const uploadSlip = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพสลิป" });
     }
 
-    // 1. ดึง URL จาก Cloudinary ที่ Multer เตรียมไว้ให้
+    //  ดึง URL จาก Cloudinary ที่ Multer เตรียมไว้ให้
     // ปกติจะเป็น file.path หรือ file.secure_url
     const imageUrl = file.path || file.secure_url;
 
-    // 2. บันทึก URL ลง Database และเปลี่ยนสถานะ
+    //  บันทึก URL ลง Database และเปลี่ยนสถานะ
     const updatedOrder = await prisma.order.update({
       where: { id: id as string },
       data: {
@@ -256,14 +256,14 @@ export const adminUpdateOrderStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body; // รับค่า status ใหม่จาก Frontend (เช่น "PAID", "SHIPPED", "CANCELLED")
 
-    // 1. ตรวจสอบว่าส่ง status มาไหม
+    // ตรวจสอบว่าส่ง status มาไหม
     if (!status) {
       return res
         .status(400)
         .json({ message: "กรุณาระบุสถานะที่ต้องการเปลี่ยน" });
     }
 
-    // 2. อัปเดตสถานะใน Database
+    // อัปเดตสถานะใน Database
     const updatedOrder = await prisma.order.update({
       where: {
         id: id as string, // หรือ Number(id) ตามที่แก้ให้หายแดงเมื่อกี้

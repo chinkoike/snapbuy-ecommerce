@@ -2,14 +2,14 @@ import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
-// 1. Config Cloudinary
+// Config Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
   api_key: process.env.CLOUDINARY_API_KEY!,
   api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-// 2. Setup Storage
+// Setup Storage
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (_req: any, file: any) => {
@@ -26,7 +26,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// 3. สร้าง Middleware สำหรับ Multer
+// สร้าง Middleware สำหรับ Multer
 export const uploadCloud = multer({ storage });
 
 export default cloudinary;

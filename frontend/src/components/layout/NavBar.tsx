@@ -29,7 +29,7 @@ const Navbar = () => {
       // ส่งไปที่หน้า products พร้อม query string
       navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
     } else {
-      navigate("/products"); // ถ้าว่างให้ไปหน้าสินค้าทั้งหมด
+      navigate("/products");
     }
   };
   return (

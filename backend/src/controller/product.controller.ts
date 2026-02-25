@@ -164,7 +164,7 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (description !== undefined) updateData.description = description;
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
 
-    // ✅ ป้องกัน Bug เรื่องตัวเลข
+    // ป้องกัน Bug เรื่องตัวเลข
     if (price !== undefined) updateData.price = Math.round(Number(price));
     if (stock !== undefined) updateData.stock = Math.round(Number(stock));
 
@@ -234,7 +234,7 @@ export const toggleProductStatus = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(200).json(updatedProduct); // ส่ง Object ที่อัปเดตกลับไปเพื่อให้ UI ทราบสถานะใหม่
+    return res.status(200).json(updatedProduct);
   } catch (error) {
     console.error("Toggle Product Error:", error);
     return res.status(500).json({ error: "Internal Server Error" });

@@ -35,15 +35,13 @@ const CheckoutPage = () => {
       const token = await getAccessTokenSilently();
 
       const orderData = {
-        // แมพจาก id ในตะกร้า ไปเป็น productId ใน Order
         items: cart.map((item) => ({
-          productId: item.id, // ใช้ .id เพราะ CartItem extends ProductData
+          productId: item.id,
           name: item.name,
           price: item.price,
           quantity: item.quantity,
           imageUrl: item.imageUrl ?? undefined,
         })),
-        // เรียก totalPrice() เพราะใน Store มันเป็นฟังก์ชัน (Getter)
         totalPrice: totalPrice(),
         shippingAddress: form,
         paymentMethod: "PROMPTPAY" as const,
@@ -68,7 +66,6 @@ const CheckoutPage = () => {
         </p>
       </div>
     );
-  // ถ้าตะกร้าว่าง ให้แสดง UI บอกผู้ใช้ (UX ที่ดี)
   if (cart.length === 0 && !loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
@@ -250,7 +247,7 @@ const CheckoutPage = () => {
                     Total
                   </span>
                   <span className="text-2xl font-light">
-                    {/* ✨ เติม () ต่อท้าย totalPrice */}฿
+                    {/* เติม () ต่อท้าย totalPrice */}฿
                     {totalPrice().toLocaleString()}
                   </span>
                 </div>

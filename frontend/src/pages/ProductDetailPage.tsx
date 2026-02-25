@@ -1,6 +1,5 @@
-// frontend/src/components/ProductDetail.tsx
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"; // ต้องติดตั้ง react-router-dom
+import { useNavigate, useParams } from "react-router-dom";
 import type { ProductData } from "../../../shared/types/product";
 import { ProductService } from "../services/product.service";
 import { ArrowLeft, ShieldCheck, ShoppingBag, Star, Truck } from "lucide-react";
@@ -14,7 +13,7 @@ export const ProductDetail = () => {
   const navigate = useNavigate();
   const handleAddClick = () => {
     if (product) {
-      addToCart(product); // ✨ กดปุ่มเดียว ได้ทั้งเพิ่มของ, เพิ่มเลข Badge และเปิดสไลด์
+      addToCart(product);
     }
   };
   useEffect(() => {
@@ -45,16 +44,13 @@ export const ProductDetail = () => {
         <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-7">
             <div className="aspect-4/5 bg-gray-100 rounded-sm"></div>{" "}
-            {/* รูปสินค้าจำลอง */}
           </div>
           <div className="lg:col-span-5 space-y-6 flex flex-col justify-center">
             <div className="h-4 w-32 bg-gray-100 mb-4"></div>
             <div className="h-16 w-full bg-gray-200"></div>{" "}
-            {/* หัวข้อสินค้าจำลอง */}
             <div className="h-8 w-24 bg-gray-100"></div>
             <div className="h-32 w-full bg-gray-50 mt-10"></div>
             <div className="h-16 w-full bg-gray-900/10 mt-10"></div>{" "}
-            {/* ปุ่มจำลอง */}
           </div>
         </main>
       </div>
@@ -63,7 +59,7 @@ export const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-black">
-      {/* Navigation Bar แบบจางๆ */}
+      {/* Navigation Bar  */}
       <nav className="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
         <button
           onClick={() => navigate(-1)}
@@ -89,7 +85,6 @@ export const ProductDetail = () => {
               />
             </div>
 
-            {/* Features เล็กๆ ใต้รูป */}
             <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="bg-[#F6F6F6] p-4 flex items-center gap-3">
                 <Truck size={18} strokeWidth={1.5} />

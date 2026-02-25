@@ -16,7 +16,7 @@ export const useAuthSync = () => {
       // เช็คว่าโหลดเสร็จหรือยัง, ล็อกอินหรือยัง และไม่ได้กำลังซิงค์อยู่
       if (isLoading || !isAuthenticated || !user || isSyncing.current) return;
 
-      isSyncing.current = true; // ตั้งค่าว่ากำลังซิงค์
+      isSyncing.current = true;
 
       try {
         const token = await getAccessTokenSilently({
@@ -26,7 +26,6 @@ export const useAuthSync = () => {
           },
         });
 
-        // เรียก Backend API เดิมของคุณ
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/me`,
           {

@@ -8,7 +8,7 @@ export const UserLayout = () => {
       <Navbar />
       <CartDrawer />
       <main>
-        <Outlet /> {/* หน้าลูกๆ เช่น HomePage, ProductDetail จะมาโผล่ตรงนี้ */}
+        <Outlet />
       </main>
     </>
   );

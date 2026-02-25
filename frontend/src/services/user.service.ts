@@ -1,5 +1,4 @@
-// src/services/user.service.ts
-import { api } from "../lib/axios"; // ใช้ instance ที่คุณตั้งค่าไว้
+import { api } from "../lib/axios";
 
 export const UserService = {
   getUsers: async (token: string) => {

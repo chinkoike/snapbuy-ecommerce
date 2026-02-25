@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Menu, X } from "lucide-react"; // แนะนำให้ใช้ lucide-react เพื่อความสวยงาม
-
+import { Menu, X } from "lucide-react";
 export const AdminLayout = () => {
   const location = useLocation();
-  const { user, logout } = useAuth0(); // ✨ ดึงข้อมูล User จริง
-  const [isSidebarOpen, setSidebarOpen] = useState(false); // ✨ State สำหรับเปิด/ปิด Sidebar
+  const { user, logout } = useAuth0();
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 

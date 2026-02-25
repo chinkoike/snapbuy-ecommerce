@@ -31,7 +31,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/order-success/:id" element={<OrderSuccessPage />} />
-          {/* --- Protected Route --- */}
+
           <Route
             path="/profile"
             element={

@@ -8,7 +8,6 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // ถ้าไม่มี order ส่งมา ไม่ต้องแสดงอะไรเลย
   if (!order) return null;
 
   return (

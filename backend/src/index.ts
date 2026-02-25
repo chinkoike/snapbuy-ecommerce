@@ -3,7 +3,6 @@ dotenv.config();
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import cors from "cors";
-// 1. นำเข้า auth
 import userRouter from "./routes/user.js";
 import productRouter from "./routes/product.js";
 import categoryRouter from "./routes/category.js";

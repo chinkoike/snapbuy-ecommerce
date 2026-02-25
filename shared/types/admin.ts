@@ -1,4 +1,3 @@
-// ประวัติ User ย่อๆ ใน Dashboard
 export interface RecentUser {
   id: string;
   email: string;
@@ -6,7 +5,6 @@ export interface RecentUser {
   createdAt: string;
 }
 
-// โครงสร้าง Stats ที่ได้จาก API
 export interface DashboardStats {
   sales: {
     total: number;

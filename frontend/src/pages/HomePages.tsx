@@ -46,15 +46,13 @@ const HomePage = () => {
             </div>
 
             {/* Product Grid Area */}
-            {/* ✅ 1. ใช้ Grid นอกสุดตัวเดียวคุมทั้งหมด */}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
               {loading ? (
-                /* ตอนโหลด: แสดง Skeleton 8 อัน กระจายตัวตาม Grid ด้านบน */
                 Array.from({ length: 8 }).map((_, index) => (
                   <ProductSkeleton key={index} />
                 ))
               ) : products && products.filter((p) => p.isActive).length > 0 ? (
-                /* ✅ 2. เอา div grid-cols ที่ซ้อนอยู่ออกไปเลย (ใช้ร่วมกับด้านบน) */
                 products
                   .filter((product) => product.isActive === true)
                   .map((product, index) => (
@@ -67,7 +65,6 @@ const HomePage = () => {
                     </div>
                   ))
               ) : (
-                /* ✅ 3. ถ้าไม่มีสินค้า ให้กินพื้นที่เต็มแถว (col-span-full) */
                 <div className="col-span-full py-20 text-center border border-dashed border-zinc-300">
                   <p className="text-xs uppercase tracking-widest text-zinc-400">
                     No items available in this collection.
@@ -111,8 +108,7 @@ const HomePage = () => {
                 ? Array.from({ length: 8 }).map((_, index) => (
                     <ProductSkeleton key={index} />
                   ))
-                : // แสดงสินค้าจริงเมื่อโหลดเสร็จ
-                  products
+                : products
                     .filter((product) => product.isActive === true)
                     .map((product) => (
                       <ProductCard key={product.id} product={product} />

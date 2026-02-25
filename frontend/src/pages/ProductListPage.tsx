@@ -1,6 +1,5 @@
-// frontend/src/components/ProductList.tsx
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom"; // ✨ นำเข้ามา
+import { useSearchParams } from "react-router-dom";
 import { ProductCard } from "../components/ui/ProductCard";
 import { FilterSidebar } from "../components/ui/FilterSidebar";
 import { Pagination } from "../components/ui/PaginationProps";
@@ -16,18 +15,16 @@ export const ProductList = () => {
     fetchCategories,
   } = useCategoryStore();
 
-  // ✨ เปลี่ยนจาก useState เป็น useSearchParams
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
   const currentPage = Number(searchParams.get("page")) || 1;
   const search = searchParams.get("search") || "";
-  // ฟังก์ชันจัดการเวลาเปลี่ยนหมวดหมู่ (Update URL แทน Update State)
 
   const handleCategoryChange = (id: string | null) => {
     if (id) {
-      setSearchParams({ category: id, page: "1" }); // เมื่อเปลี่ยนหมวดหมู่ให้กลับไปหน้า 1
+      setSearchParams({ category: id, page: "1" });
     } else {
-      setSearchParams({}); // ล้าง Filter ทั้งหมด
+      setSearchParams({});
     }
   };
 
@@ -38,11 +35,10 @@ export const ProductList = () => {
   };
 
   useEffect(() => {
-    // ✨ ดึงข้อมูลตามค่าที่ได้จาก URL จริงๆ
     fetchProducts(selectedCategory, currentPage, search);
     fetchCategories();
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [fetchProducts, fetchCategories, selectedCategory, currentPage, search]); // เมื่อ URL เปลี่ยน useEffect จะทำงานทันที
+  }, [fetchProducts, fetchCategories, selectedCategory, currentPage, search]);
 
   if (loading || categoriesLoading)
     return (
@@ -69,7 +65,6 @@ export const ProductList = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className="space-y-4">
-                  {/* สัดส่วน 4/5 ตามหน้า Product Detail ของคุณ */}
                   <div className="aspect-4/5 bg-gray-100 rounded-sm"></div>
                   <div className="space-y-2">
                     <div className="h-4 w-2/3 bg-gray-200"></div>
@@ -92,7 +87,6 @@ export const ProductList = () => {
 
   return (
     <div className="bg-white min-h-screen text-black">
-      {/* ส่วนอื่นๆ เหมือนเดิม */}
       <div className="max-w-7xl mx-auto px-6 pt-12 pb-6 border-b border-black flex justify-between items-end">
         <h1 className="text-4xl font-black uppercase tracking-tighter">
           {selectedCategory

@@ -14,7 +14,6 @@ const router = express.Router();
 router.get("/products", getProducts);
 router.get("/products/:id", getProductById);
 
-// ✅ ต้องมี checkJwt ก่อน
 router.post(
   "/admin/products",
   checkJwt,
@@ -22,14 +21,12 @@ router.post(
   uploadCloud.single("image"),
   createProduct,
 );
-// ใน product.route.ts
 router.post(
   "/admin/products/upload-image",
   checkJwt,
   requireAdmin,
   uploadCloud.single("image"),
   async (req, res) => {
-    // ใส่ async ด้วย
     try {
       const file = req.file as any;
 
@@ -37,12 +34,11 @@ router.post(
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // ใช้สูตรเดียวกับ uploadSlip ที่คุณทำได้
       const imageUrl = file.path || file.secure_url;
 
-      console.log("Upload Success:", imageUrl); // ดู Log ใน Render
+      console.log("Upload Success:", imageUrl);
 
-      return res.json({ imageUrl }); // ส่งกลับไปให้ Frontend เอาไปใส่ payload.imageUrl
+      return res.json({ imageUrl });
     } catch (error: any) {
       console.error("Upload Route Error:", error);
       return res.status(500).json({ error: error.message || "Upload failed" });
@@ -50,13 +46,7 @@ router.post(
   },
 );
 
-// เส้นที่ 2: สำหรับอัปเดตข้อมูลสินค้า (รับ JSON ล้วนๆ ไม่ต้องมี uploadCloud)
-router.patch(
-  "/admin/products/:id",
-  checkJwt,
-  requireAdmin,
-  updateProduct, // ตัว Controller เดิมแต่ปรับให้รับ JSON
-);
+router.patch("/admin/products/:id", checkJwt, requireAdmin, updateProduct);
 router.patch(
   "/admin/products/:id/status",
   checkJwt,

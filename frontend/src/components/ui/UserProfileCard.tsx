@@ -5,7 +5,6 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   userFromDb,
   isLoading,
 }) => {
-  // --- ส่วนของ Skeleton (Loading State) ---
   if (isLoading) {
     return (
       <div className="lg:col-span-1">

@@ -27,13 +27,12 @@ export const orderService = {
     const response = await api.get(`/api/user/order/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data; // Backend ต้องส่งข้อมูล Order กลับมา
+    return response.data;
   },
-  // ดึงข้อมูลออเดอร์ทั้งหมด
 
   uploadOrderSlip: async (orderId: string, file: File, token: string) => {
     const formData = new FormData();
-    formData.append("slip", file); // ชื่อ "slip" ต้องตรงกับ Backend
+    formData.append("slip", file);
 
     const response = await api.patch(
       `/api/user/${orderId}/upload-slip`,
@@ -63,7 +62,7 @@ export const orderService = {
     });
     return response.data;
   },
-  // อัปเดตสถานะออเดอร์
+
   updateStatus: async (
     orderId: string,
     newStatus: OrderStatus,

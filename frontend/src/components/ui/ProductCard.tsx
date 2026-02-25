@@ -7,7 +7,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const addToCart = useCartStore((state) => state.addToCart);
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // ใช้ as any เพื่อข้ามการตรวจ Type (ไม่แนะนำในระยะยาวแต่แก้ปัญหาได้ทันที)
     addToCart(product);
   };
 

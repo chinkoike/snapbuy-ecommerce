@@ -105,7 +105,7 @@ export const Dashboard = () => {
             </span>
           </div>
 
-          {/* ✨ Responsive Table Wrap */}
+          {/*  Responsive Table Wrap */}
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-150">
               <thead>

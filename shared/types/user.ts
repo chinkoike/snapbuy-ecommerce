@@ -11,13 +11,11 @@ export interface UserData {
   deletedAt: Date | null;
   token?: string;
 
-  // --- ข้อมูลที่เพิ่มเข้ามาจากการ Join หรือ Aggregate ---
-  orderCount?: number; // จำนวนออเดอร์ทั้งหมด
-  totalSpent?: number; // ยอดเงินรวมที่จ่ายไปแล้ว
-  orders?: OrderData[]; // รายการออเดอร์ (ถ้ามีการเรียกดู Details)
+  orderCount?: number;
+  totalSpent?: number;
+  orders?: OrderData[];
 }
 
-// สำหรับหน้า List ของ Admin (Zustand Store)
 export interface UserState {
   user: UserData | null;
   users: UserData[];
@@ -30,8 +28,8 @@ export interface UserState {
   toggleUserStatus: (id: string, token: string) => Promise<void>;
 }
 export interface ExtendedUserState {
-  user: UserData | null; // ข้อมูล User ที่ Login อยู่
-  users: UserData[]; // รายชื่อ User ทั้งหมดสำหรับ Admin
+  user: UserData | null;
+  users: UserData[];
   loading: boolean;
   error: string | null;
 
@@ -45,6 +43,6 @@ export interface UserProfileCardProps {
   userFromDb: {
     role?: string;
     email?: string;
-  } | null; // รองรับกรณีข้อมูลยังไม่มาหรือเป็น null
+  } | null;
   isLoading?: boolean;
 }

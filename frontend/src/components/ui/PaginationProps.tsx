@@ -1,4 +1,3 @@
-// frontend/src/components/Pagination.tsx
 import type { PaginationProps } from "../../../../shared/types/product";
 import React from "react";
 

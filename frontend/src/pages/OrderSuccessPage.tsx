@@ -49,8 +49,6 @@ const OrderSuccessPage = () => {
       try {
         const token = await getAccessTokenSilently();
 
-        // 1. สร้าง Service ใหม่ชื่อ getOrderById (ถ้ายังไม่มี)
-        // แทนที่จะเรียก fetchOrders (ที่โหลดทั้งหมด) ให้โหลดแค่ใบเดียว
         const singleOrder = await orderService.getOrderById(
           id as string,
           token,
@@ -78,7 +76,7 @@ const OrderSuccessPage = () => {
       </p>
 
       <div className="w-full max-w-md grid grid-cols-1 gap-8">
-        {/* ส่วนที่ 1: ข้อมูลการโอนเงิน + ยอดเงิน (เพิ่มใหม่!) */}
+        {/*ข้อมูลการโอนเงิน + ยอดเงิน*/}
         <div className="border-2 border-black p-8 relative">
           <span className="absolute -top-3 left-4 bg-white px-2 text-[10px] font-bold uppercase tracking-widest">
             Payment Details
@@ -88,7 +86,7 @@ const OrderSuccessPage = () => {
             <p className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1">
               Total Amount to Pay
             </p>
-            {/* ✅ แสดงยอดเงินตรงนี้ */}
+            {/*แสดงยอดเงิน */}
             <h2 className="text-4xl font-black text-indigo-600">
               ฿{order?.totalPrice?.toLocaleString() ?? "..."}
             </h2>
@@ -129,7 +127,7 @@ const OrderSuccessPage = () => {
             </button>
           </div>
         )}
-        {/* ส่วนที่ 2: ฟอร์มอัปโหลดสลิป */}
+        {/* ฟอร์มอัปโหลดสลิป */}
         <div className="bg-zinc-50 p-8 border border-dashed border-zinc-300">
           <h3 className="text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
             <Upload size={14} /> Upload Payment Slip

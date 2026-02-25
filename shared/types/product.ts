@@ -1,8 +1,8 @@
 export interface CategoryData {
   id: string;
   name: string;
-  createdAt?: Date; // ใส่ ? เพื่อบอกว่าเป็นตัวเลือก จะมีหรือไม่มีก็ได้
-  updatedAt?: Date; // ใส่ ?
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 export interface FilterSidebarProps {
   categories: CategoryData[];
@@ -47,7 +47,7 @@ export type UpdateProductInput = {
   stock?: number;
   imageUrl?: string | null;
   categoryId?: string;
-  isActive?: boolean; // เผื่อ admin restore
+  isActive?: boolean;
 };
 export interface ProductState {
   products: ProductData[];
@@ -89,10 +89,9 @@ export interface CategoryStore {
   fetchCategories: () => Promise<void>;
   addCategory: (name: string, toke: string) => Promise<void>;
 }
-// src/shared/types/product.ts
 
 export interface ProductCardProps {
-  product: ProductData; // ✨ ใช้ Type ใหญ่ไปเลย เพื่อให้ส่งต่อเข้า Store ได้ครบถ้วน
+  product: ProductData;
 }
 export interface GetProductsResponse {
   products: ProductData[];

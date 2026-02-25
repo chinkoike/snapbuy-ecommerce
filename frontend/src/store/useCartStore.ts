@@ -1,4 +1,3 @@
-// src/store/useCartStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CartState } from "../../../shared/types/cart.js";
@@ -45,6 +44,6 @@ export const useCartStore = create<CartState>()(
           0,
         ),
     }),
-    { name: "cart-storage" }, // เก็บไว้ใน LocalStorage อัตโนมัติ
+    { name: "cart-storage" },
   ),
 );

@@ -1,4 +1,3 @@
-// src/components/CartDrawer.tsx
 import { useCartStore } from "../../store/useCartStore";
 import { X, Plus, Minus, ShoppingBag, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -97,7 +96,7 @@ const CartDrawer = () => {
                       className="group"
                     >
                       <Trash2
-                        size={18} // ปรับขนาดให้เข้ากับดีไซน์รวมๆ
+                        size={18}
                         strokeWidth={1.5}
                         className="group-hover:text-gray-300 :text-black transition-colors"
                       />

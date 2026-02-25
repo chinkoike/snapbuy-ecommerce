@@ -39,7 +39,6 @@ export const useProductStore = create<ProductState>((set) => ({
     try {
       set({ loading: true, error: null });
 
-      // ส่งทั้ง data และ file ไปที่ Service
       const newProduct = await ProductService.create(data, file, token);
 
       set((state) => ({
@@ -58,9 +57,9 @@ export const useProductStore = create<ProductState>((set) => ({
 
       if (file) {
         const { imageUrl } = await ProductService.uploadImage(file, token);
-        payload.imageUrl = imageUrl; // อันนี้คือการแก้ property ข้างใน const ยอมให้ทำได้ครับ
+        payload.imageUrl = imageUrl;
       } else if (data.imageUrl === "" || data.imageUrl === null) {
-        payload.imageUrl = null; // ส่งค่า null ไปบอก Backend ว่าให้ลบรูปออก
+        payload.imageUrl = null;
       }
       const updatedProduct = await ProductService.update(id, payload, token);
 
@@ -77,11 +76,9 @@ export const useProductStore = create<ProductState>((set) => ({
     try {
       set({ loading: true, error: null });
 
-      // รับค่า Product ที่อัปเดตแล้วจาก Backend
       const updatedProduct = await ProductService.delete(id, token);
 
       set((state) => ({
-        // ✅ แทนที่จะ filter ออก ให้ map เพื่อเปลี่ยนค่าใน List
         products: state.products.map((p) => (p.id === id ? updatedProduct : p)),
         loading: false,
       }));

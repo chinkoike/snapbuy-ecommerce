@@ -1,5 +1,3 @@
-// src/routes/category.routes.ts
-
 import express from "express";
 
 import { checkJwt, requireAdmin } from "../middleware/auth.js";

@@ -4,19 +4,15 @@ import type { Request, Response, NextFunction } from "express";
 
 dotenv.config();
 
-// ตรวจสอบ .env
 if (!process.env.AUTH0_DOMAIN || !process.env.AUTH0_AUDIENCE) {
   throw new Error("Missing Auth0 configuration in .env");
 }
 
-// Middleware ตรวจ JWT (เวอร์ชันใหม่)
 export const checkJwt = auth({
   audience: process.env.AUTH0_AUDIENCE,
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
   tokenSigningAlg: "RS256",
 });
-
-// Middleware ตรวจสอบและซิงค์สิทธิ์ Admin
 
 export const requireAdmin = async (
   req: Request,

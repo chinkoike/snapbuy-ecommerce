@@ -15,10 +15,10 @@ export const getAdminDashboardStats = async (req: Request, res: Response) => {
       // 1. คำนวณยอดขายรวมจากฟิลด์ totalPrice ใน Order
       prisma.order.aggregate({
         _sum: {
-          totalPrice: true, // ✨ แก้จาก totalAmount เป็น totalPrice ตาม Schema
+          totalPrice: true,
         },
         where: {
-          status: "PAID", // 💡 แนะนำ: นับเฉพาะออเดอร์ที่จ่ายเงินแล้ว
+          status: "PAID",
         },
       }),
 
@@ -34,7 +34,7 @@ export const getAdminDashboardStats = async (req: Request, res: Response) => {
         select: {
           id: true,
           email: true,
-          role: true, // ✨ ตาม Schema มี Enum Role
+          role: true,
           createdAt: true,
         },
       }),

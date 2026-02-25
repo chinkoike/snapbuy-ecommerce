@@ -17,7 +17,6 @@ const ProfilePage = () => {
   } = useAuth0();
   const userFromDb = useUserStore((state) => state.user);
 
-  // Get orders and loading state from OrderStore
   const { orders, fetchOrdersUser, loading: isOrdersLoading } = useOrderStore();
 
   const navigate = useNavigate();
@@ -28,7 +27,6 @@ const ProfilePage = () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
-          // Ensure fetchOrders points to /api/user/order (Customer endpoint)
           await fetchOrdersUser(token);
         } catch (error) {
           console.error("Failed to fetch orders:", error);
@@ -38,11 +36,9 @@ const ProfilePage = () => {
     loadData();
   }, [isAuthenticated, getAccessTokenSilently, fetchOrdersUser]);
 
-  // ✅ Filter only orders belonging to this specific User
   const myOrders = orders.filter((o) => o.userId === userFromDb?.id);
   const pendingOrders = myOrders.filter((o) => o.status === "PENDING").length;
 
-  // Combine loading states for initial entrance
   if (isAuthLoading)
     return (
       <div className="flex justify-center items-center h-screen bg-[#fafafa]">

@@ -1,7 +1,6 @@
 import type { UserData } from "./user.js";
 import type { ProductData } from "./product.js";
 
-// --- 1. Core Data Models (ข้อมูลที่มาจาก Backend) ---
 export type OrderStatus = "PENDING" | "PAID" | "SHIPPED" | "CANCELLED";
 
 export interface OrderData {
@@ -22,12 +21,11 @@ export interface OrderItemData {
   orderId: string;
   productId: string;
   quantity: number;
-  priceAtPurchase: number; // ราคาที่จ่ายจริง ณ ตอนนั้น
+  priceAtPurchase: number;
   product?: ProductData;
   order?: OrderData;
 }
 
-// --- 2. DTOs (ข้อมูลที่ใช้สำหรับส่งไป Create ออเดอร์) ---
 export interface ShippingAddress {
   firstName: string;
   lastName: string;
@@ -40,18 +38,17 @@ export interface CreateOrderDto {
   items: Array<{
     productId: string;
     quantity: number;
-    price: number; // ราคาที่ส่งไปบันทึก
+    price: number;
   }>;
   totalPrice: number;
   shippingAddress: ShippingAddress;
   paymentMethod: string;
 }
 
-// --- 3. Store Interface (รวม OrderState และ OrderStore เข้าด้วยกัน) ---
 export interface OrderStore {
   orders: OrderData[];
   loading: boolean;
-  isUploading: boolean; // แยก loading ปกติกับตอนอัปโหลดไฟล์
+  isUploading: boolean;
   error: string | null;
 
   fetchOrders: (token: string) => Promise<void>;

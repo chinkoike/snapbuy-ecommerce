@@ -30,7 +30,6 @@ export const CategoryCreate = () => {
       setTimeout(() => setStatus({ type: null, msg: "" }), 3000);
     } catch (err: unknown) {
       if (err instanceof Error) {
-        // TypeScript จะยอมให้เข้าถึง .message ได้เพราะมั่นใจว่าเป็น Error object
         setStatus({ type: "error", msg: err.message });
       } else {
         setStatus({ type: "error", msg: "Something went wrong" });

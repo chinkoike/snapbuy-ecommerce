@@ -36,7 +36,7 @@ export const OrderList: React.FC<OrderListProps> = ({
     try {
       const token = await getAccessTokenSilently();
       await cancelOrder(orderToCancel, token);
-      setOrderToCancel(null); // ปิด Modal หลังจาก Store อัปเดต State เสร็จ
+      setOrderToCancel(null);
     } catch (err) {
       console.error("Cancel failed:", err);
     }
