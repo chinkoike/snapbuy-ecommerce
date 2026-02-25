@@ -98,3 +98,6 @@ export interface GetProductsResponse {
   totalPages: number;
   totalCount: number;
 }
+export interface ProductListProps {
+  onEdit: (product: ProductData) => void;
+}

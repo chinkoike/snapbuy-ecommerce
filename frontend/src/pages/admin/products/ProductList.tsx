@@ -1,35 +1,33 @@
 import { useEffect, useState } from "react";
 import { useProductStore } from "../../../store/useProductStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { ProductData } from "../../../../../shared/types/product";
-
-interface ProductListProps {
-  onEdit: (product: ProductData) => void;
-}
+import type { ProductListProps } from "../../../../../shared/types/product";
 
 export const ProductList = ({ onEdit }: ProductListProps) => {
   const { getAccessTokenSilently } = useAuth0();
   const { loading, products, fetchProducts, deleteProduct } = useProductStore();
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [confirmData, setConfirmData] = useState<{
+    id: string;
+    currentStatus: boolean;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to ${currentStatus ? "disable" : "enable"} this product?`,
-      )
-    )
-      return;
+  const handleToggleStatus = async (id: string) => {
     try {
       setProcessingId(id);
       const token = await getAccessTokenSilently();
-
       await deleteProduct(id, token);
+      // เพิ่ม logic หลังจากลบสำเร็จ เช่น refresh ข้อมูล
+    } catch (error) {
+      console.error(error);
     } finally {
       setProcessingId(null);
+      setConfirmData(null); // ปิด modal
     }
   };
   if (loading && products.length === 0)
@@ -123,10 +121,51 @@ export const ProductList = ({ onEdit }: ProductListProps) => {
                   >
                     Edit_Entry
                   </button>
+                  {/* 1. Modal Overlay */}
+                  {confirmData && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                      <div className="bg-white border-2 border-black p-8 max-w-sm w-full shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                        <h3 className="text-xl font-black uppercase tracking-tighter mb-4">
+                          Confirm_Action
+                        </h3>
+                        <p className="text-sm font-medium text-zinc-600 mb-8 uppercase tracking-tight">
+                          Are you sure you want to{" "}
+                          <span className="text-black font-black underline">
+                            {confirmData.currentStatus ? "disable" : "enable"}
+                          </span>{" "}
+                          product:
+                          <br />"{confirmData.name}"?
+                        </p>
 
+                        <div className="flex gap-4">
+                          <button
+                            onClick={() => setConfirmData(null)}
+                            className="flex-1 px-4 py-3 border-2 border-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-100 transition-colors"
+                          >
+                            Cancel_Abort
+                          </button>
+                          <button
+                            onClick={() => handleToggleStatus(confirmData.id)}
+                            className={`flex-1 px-4 py-3 border-2 border-black font-black uppercase text-[10px] tracking-widest text-white transition-all active:translate-x-1 active:translate-y-1 ${
+                              confirmData.currentStatus
+                                ? "bg-red-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                                : "bg-black shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]"
+                            }`}
+                          >
+                            Confirm_Execute
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {/* ส่วนของปุ่มใน Table */}
                   <button
                     onClick={() =>
-                      handleToggleStatus(product.id, product.isActive)
+                      setConfirmData({
+                        id: product.id,
+                        currentStatus: product.isActive,
+                        name: product.name,
+                      })
                     }
                     disabled={processingId === product.id}
                     className={`text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 border transition-all cursor-pointer ${
