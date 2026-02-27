@@ -24,42 +24,42 @@ export const getMyOrders = async (req: Request, res: Response) => {
     //  ดึงเฉพาะ Order ที่เป็นของ User คนนี้
     const orders = await prisma.order.findMany({
       where: {
-        userId: user.id, // ใช้ UUID ของ User จาก DB
+        userId: user.id,
       },
       include: {
         items: {
           include: {
-            product: true, // ดึงข้อมูลสินค้าไปด้วยเพื่อไปโชว์ใน Profile
+            product: true,
           },
         },
       },
       orderBy: {
-        createdAt: "desc", // เอาอันล่าสุดขึ้นก่อน
+        createdAt: "desc",
       },
     });
 
-    return res.status(200).json(orders);
-  } catch (error) {
-    console.error("Get My Orders Error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(200).json({ success: true, data: orders });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
-// สำหรับดึงออเดอร์ใบเดียว (ใช้ตอน Refresh หน้า Success)
 export const getOrderById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const auth0Id = (req as any).auth?.payload?.sub; // นี่คือ "auth0|..."
+    const auth0Id = (req as any).auth?.payload?.sub;
 
-    // ไปหา User ใน DB ก่อนว่า auth0|... คนนี้ มี ID ในระบบเราคืออะไร
+    // ไปหา User ใน DB ก่อนว่า auth0 คนนี้ มี ID ในระบบเราคืออะไร
     const user = await prisma.user.findUnique({
-      where: { auth0Id: auth0Id }, // สมมติว่าในตาราง User คุณเก็บ auth0Id ไว้
+      where: { auth0Id: auth0Id },
     });
 
     if (!user) {
       return res.status(404).json({ error: "User not found in system" });
     }
 
-    // ดึง Order ออกมา
     const order = await prisma.order.findUnique({
       where: { id: id as string },
     });
@@ -68,15 +68,17 @@ export const getOrderById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // เทียบ ID จาก Database กับ Database (UUID vs UUID)
     if (order.userId !== user.id) {
       console.log(`Mismatch Fixed: ${order.userId} vs ${user.id}`);
       return res.status(403).json({ error: "Access denied" });
     }
 
-    return res.status(200).json(order);
-  } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(200).json({ success: true, data: order });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 export const createOrder = async (req: Request, res: Response) => {
@@ -109,7 +111,6 @@ export const createOrder = async (req: Request, res: Response) => {
           });
 
           if (!product || product.stock < item.quantity) {
-            //  ถ้าใน item ไม่มี name ให้ดึงจาก product ที่หาเจอใน DB แทน
             throw new Error(
               `Product ${product?.name || item.productId} is out of stock.`,
             );
@@ -121,10 +122,9 @@ export const createOrder = async (req: Request, res: Response) => {
           });
         }
 
-        // สร้าง Order (ใช้ user.id ที่หาได้จาก DB แน่นอน)
         return await tx.order.create({
           data: {
-            userId: user.id, // มั่นใจได้แล้วว่า ID นี้มีอยู่จริง
+            userId: user.id,
             totalPrice: totalPrice,
             status: "PENDING",
             items: {
@@ -142,25 +142,23 @@ export const createOrder = async (req: Request, res: Response) => {
       },
     );
 
-    res.status(201).json(result); // ส่งตัวแปร result (ซึ่งคือ order) กลับไป
-  } catch (error) {
-    console.error("Checkout Error:", error);
-    const message =
-      error instanceof Error ? error.message : "Failed to create order";
-    res.status(400).json({ message });
+    res.status(201).json(result);
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
 export const cancelOrder = async (req: Request, res: Response) => {
-  const { id } = req.params; // order id
-  const auth0Id = req.auth?.payload?.sub; // ดึง sub จาก Auth0 payload
-
+  const { id } = req.params;
+  const auth0Id = req.auth?.payload?.sub;
   if (!auth0Id) {
     return res.status(401).json({ message: "Unauthorized: No sub found" });
   }
 
   try {
-    //  หา User ใน DB ของเราด้วย auth0Id (sub)
     const user = await prisma.user.findUnique({
       where: { auth0Id: auth0Id },
     });
@@ -169,25 +167,22 @@ export const cancelOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found in database" });
     }
 
-    // หา Order ที่ตรงกับ ID และเป็นของ User คนนี้ + สถานะต้องเป็น PENDING
     const order = await prisma.order.findFirst({
       where: {
         id: id as string,
-        userId: user.id, // ใช้ ID User
+        userId: user.id,
         status: "PENDING",
       },
-      include: { items: true }, // ดึงสินค้าในออเดอร์มาเพื่อคืนสต็อก
+      include: { items: true },
     });
 
     if (!order) {
       return res
         .status(404)
-        .json({ message: "ไม่พบออเดอร์ที่สามารถยกเลิกได้" });
+        .json({ message: "No orders were found that could be canceled" });
     }
 
-    // เริ่มกระบวนการ Transaction (ต้องสำเร็จทั้งหมด หรือไม่สำเร็จเลย)
     await prisma.$transaction(async (tx) => {
-      // อัปเดตสถานะออเดอร์เป็น CANCELLED
       await tx.order.update({
         where: { id: id as string },
         data: { status: "CANCELLED" },
@@ -198,16 +193,18 @@ export const cancelOrder = async (req: Request, res: Response) => {
         await tx.product.update({
           where: { id: item.productId },
           data: {
-            stock: { increment: item.quantity }, // เพิ่มค่าสต็อกกลับเข้าไป
+            stock: { increment: item.quantity },
           },
         });
       }
     });
 
-    res.json({ message: "ยกเลิกออเดอร์สำเร็จ สต็อกถูกคืนเข้าระบบแล้ว" });
+    res.json({ message: "Order successfully cancelled" });
   } catch (error: unknown) {
-    console.error("Cancel Order Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
@@ -215,16 +212,16 @@ export const uploadSlip = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // เมื่อใช้ multer-storage-cloudinary ไฟล์จะถูกอัปโหลดอัตโนมัติ
-    // และ URL จะอยู่ที่ req.file.path (หรือ req.file.secure_url ขึ้นอยู่กับ version)
+    //URL จะอยู่ที่ req.file.path
     const file = req.file as any;
 
     if (!file) {
-      return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพสลิป" });
+      return res
+        .status(400)
+        .json({ error: "Please upload a picture of the receipt" });
     }
 
     //  ดึง URL จาก Cloudinary ที่ Multer เตรียมไว้ให้
-    // ปกติจะเป็น file.path หรือ file.secure_url
     const imageUrl = file.path || file.secure_url;
 
     //  บันทึก URL ลง Database และเปลี่ยนสถานะ
@@ -232,21 +229,21 @@ export const uploadSlip = async (req: Request, res: Response) => {
       where: { id: id as string },
       data: {
         slipUrl: imageUrl,
-        status: "PENDING", // เปลี่ยนสถานะให้ Admin เห็นในหน้า Dashboard
+        status: "PENDING",
       },
     });
 
     return res.status(200).json({
-      message: "อัปโหลดสลิปสำเร็จ แอดมินจะรีบตรวจสอบรายการของคุณ",
+      success: true,
+      message: "Payment slip uploaded successfully",
       url: imageUrl,
       order: updatedOrder,
     });
-  } catch (error: any) {
-    console.error("Controller Error:", error);
-    return res.status(500).json({
-      message: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
-      error: error.message,
-    });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
@@ -254,48 +251,40 @@ export const uploadSlip = async (req: Request, res: Response) => {
 export const adminUpdateOrderStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // รับค่า status ใหม่จาก Frontend (เช่น "PAID", "SHIPPED", "CANCELLED")
+    const { status } = req.body;
 
     // ตรวจสอบว่าส่ง status มาไหม
     if (!status) {
       return res
         .status(400)
-        .json({ message: "กรุณาระบุสถานะที่ต้องการเปลี่ยน" });
+        .json({ error: "Please specify the status you wish to change" });
     }
 
     // อัปเดตสถานะใน Database
     const updatedOrder = await prisma.order.update({
       where: {
-        id: id as string, // หรือ Number(id) ตามที่แก้ให้หายแดงเมื่อกี้
+        id: id as string,
       },
       data: {
-        status: status, // ค่าต้องตรงกับ Enum OrderStatus ใน Prisma
+        status: status,
       },
     });
 
     return res.status(200).json({
-      message: "อัปเดตสถานะออเดอร์เรียบร้อยแล้ว",
+      success: true,
+      message: "Order status has been successfully updated",
       order: updatedOrder,
     });
-  } catch (error: any) {
-    console.error("Admin Update Error:", error);
-
-    // กรณีหา ID ไม่เจอ
-    if (error.code === "P2025") {
-      return res.status(404).json({ message: "ไม่พบรายการคำสั่งซื้อนี้" });
-    }
-
-    return res.status(500).json({
-      message: "เกิดข้อผิดพลาดในการอัปเดต",
-      error: error.message,
-    });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    // ระบุ <OrderData[]> เพื่อบอก Prisma ว่าเราคาดหวังผลลัพธ์แบบไหน
-    // หรือปล่อยให้มันเป็น Default แล้วไป Cast ตอนส่ง Response
     const orders = await prisma.order.findMany({
       include: {
         user: true,
@@ -308,10 +297,16 @@ export const getAllOrders = async (req: Request, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
-    // ใช้ความสามารถของ Express ในการระบุ Type ของสิ่งที่ส่งออกไป
-    return res.status(200).json(orders as OrderData[]);
-  } catch (error) {
-    console.error("Get All Orders Error:", error);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(200).json({
+      success: true,
+      message: "Orders retrieved successfully",
+      count: orders.length,
+      data: orders as OrderData[],
+    });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };

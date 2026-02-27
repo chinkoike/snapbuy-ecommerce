@@ -35,7 +35,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
     set({ loading: true });
     try {
       const data = await orderService.getMyOrders(token);
-      set({ orders: data, loading: false });
+      set({ orders: Array.isArray(data) ? data : [], loading: false });
     } catch (err: unknown) {
       console.log(err);
 
@@ -43,7 +43,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
       return;
     }
   },
-  // --- Client Side ---
+  // --- user Side ---
   createOrder: async (orderData: CreateOrderDto, token: string) => {
     set({ loading: true, error: null });
     try {
@@ -113,7 +113,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
     set({ loading: true, error: null });
     try {
       const data = await orderService.getAllOrders(token);
-      set({ orders: data, loading: false });
+      set({ orders: Array.isArray(data) ? data : [], loading: false });
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to fetch orders";
@@ -128,18 +128,21 @@ export const useOrderStore = create<OrderStore>((set) => ({
   ) => {
     set({ loading: true });
     try {
-      await orderService.updateStatus(orderId, newStatus, token);
+      const updatedOrder = await orderService.updateStatus(
+        orderId,
+        newStatus,
+        token,
+      );
 
       set((state) => ({
         orders: state.orders.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order,
+          order.id === orderId ? updatedOrder : order,
         ),
         loading: false,
       }));
-
       console.log(`✅ UI Updated: ${orderId.slice(-4)} -> ${newStatus}`);
     } catch (err) {
-      console.error("❌ Update failed:", err);
+      console.error("Update failed:", err);
       set({ loading: false, error: "Update status failed" });
     }
   },

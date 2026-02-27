@@ -5,7 +5,10 @@ import type { OrderData, OrderStatus } from "../../../../../shared/types/order";
 
 export const OrderList = () => {
   const { getAccessTokenSilently } = useAuth0();
-  const { orders, fetchOrders, updateOrderStatus, loading } = useOrderStore();
+  const orders = useOrderStore((state) => state.orders);
+  const fetchOrders = useOrderStore((state) => state.fetchOrders);
+  const updateOrderStatus = useOrderStore((state) => state.updateOrderStatus);
+  const loading = useOrderStore((state) => state.loading);
   const [selectedSlipUrl, setSelectedSlipUrl] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);

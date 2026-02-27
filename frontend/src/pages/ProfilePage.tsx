@@ -17,8 +17,9 @@ const ProfilePage = () => {
   } = useAuth0();
   const userFromDb = useUserStore((state) => state.user);
 
-  const { orders, fetchOrdersUser, loading: isOrdersLoading } = useOrderStore();
-
+  const orders = useOrderStore((state) => state.orders);
+  const fetchOrdersUser = useOrderStore((state) => state.fetchOrdersUser);
+  const isOrdersLoading = useOrderStore((state) => state.loading);
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
 

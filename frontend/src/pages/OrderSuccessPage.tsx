@@ -3,15 +3,14 @@ import { CheckCircle, Upload, ArrowLeft, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOrderStore } from "../store/useOrderStore";
 import { useAuth0 } from "@auth0/auth0-react";
-import type { OrderData } from "../../../shared/types/order";
-import { orderService } from "../services/order.service";
 
 const OrderSuccessPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
-  const [order, setOrder] = useState<OrderData | null>(null);
   const { getAccessTokenSilently } = useAuth0();
+  const fetchOrderById = useOrderStore((state) => state.fetchOrderById);
+  const order = useOrderStore((state) => state.orders.find((o) => o.id === id));
   const { uploadSlip, loading } = useOrderStore();
   const [statusMsg, setStatusMsg] = useState<{
     type: "error" | "success";
@@ -45,25 +44,19 @@ const OrderSuccessPage = () => {
     }
   };
   useEffect(() => {
-    const fetchOrderData = async () => {
+    const loadData = async () => {
+      if (!id) return;
+
       try {
         const token = await getAccessTokenSilently();
-
-        const singleOrder = await orderService.getOrderById(
-          id as string,
-          token,
-        );
-
-        if (singleOrder) {
-          setOrder(singleOrder);
-        }
+        await fetchOrderById(id, token);
       } catch (err) {
-        console.error("Error fetching success order:", err);
+        console.error("Failed to fetch order:", err);
       }
     };
 
-    if (id) fetchOrderData();
-  }, [id]);
+    loadData();
+  }, [id, fetchOrderById, getAccessTokenSilently]);
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center py-20 px-6">
       <CheckCircle size={60} className="mb-6 text-green-500 animate-pulse" />

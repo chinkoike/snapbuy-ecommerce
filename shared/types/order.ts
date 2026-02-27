@@ -52,6 +52,7 @@ export interface OrderStore {
   error: string | null;
 
   fetchOrders: (token: string) => Promise<void>;
+  fetchOrderById: (id: string, token: string) => Promise<OrderData | null>;
   fetchOrdersUser: (token: string) => Promise<void>;
   updateOrderStatus: (
     orderId: string,

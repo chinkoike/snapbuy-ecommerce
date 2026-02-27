@@ -10,42 +10,38 @@ export const orderService = {
     orderData: CreateOrderDto,
     token: string,
   ): Promise<OrderData> => {
-    const response = await api.post("/api/user/order", orderData, {
+    const res = await api.post("/api/user/order", orderData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+    return res.data.data;
   },
   getMyOrders: async (token: string): Promise<OrderData[]> => {
-    const response = await api.get("/api/user/order/my", {
+    const res = await api.get("/api/user/order/my", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return Array.isArray(res.data.data) ? res.data.data : [];
   },
   getOrderById: async (id: string, token: string): Promise<OrderData> => {
-    const response = await api.get(`/api/user/order/${id}`, {
+    const res = await api.get(`/api/user/order/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return res.data.data;
   },
 
   uploadOrderSlip: async (orderId: string, file: File, token: string) => {
     const formData = new FormData();
     formData.append("slip", file);
 
-    const response = await api.patch(
-      `/api/user/${orderId}/upload-slip`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await api.patch(`/api/user/${orderId}/upload-slip`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
-    return response.data;
+    return res.data.data;
   },
 
   cancelOrder: async (orderId: string, token: string) => {
@@ -54,13 +50,13 @@ export const orderService = {
       {},
       { headers: { Authorization: `Bearer ${token}` } },
     );
-    return res.data;
+    return res.data.data;
   },
   getAllOrders: async (token: string): Promise<OrderData[]> => {
-    const response = await api.get("/api/admin/orders", {
+    const res = await api.get("/api/admin/orders", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return Array.isArray(res.data.data) ? res.data.data : [];
   },
 
   updateStatus: async (
@@ -68,11 +64,11 @@ export const orderService = {
     newStatus: OrderStatus,
     token: string,
   ): Promise<OrderData> => {
-    const response = await api.patch(
+    const res = await api.patch(
       `/api/admin/orders/${orderId}/status`,
       { status: newStatus },
       { headers: { Authorization: `Bearer ${token}` } },
     );
-    return response.data;
+    return res.data.data;
   },
 };
