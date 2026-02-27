@@ -27,7 +27,6 @@ export const OrderList = () => {
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
       const token = await getAccessTokenSilently();
-      // Cast string จาก select เป็น OrderStatus type
       await updateOrderStatus(orderId, newStatus as OrderStatus, token);
     } catch (err) {
       console.error("Status update failed:", err);

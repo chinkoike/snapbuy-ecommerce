@@ -11,7 +11,8 @@ const OrderSuccessPage = () => {
   const { getAccessTokenSilently } = useAuth0();
   const fetchOrderById = useOrderStore((state) => state.fetchOrderById);
   const order = useOrderStore((state) => state.orders.find((o) => o.id === id));
-  const { uploadSlip, loading } = useOrderStore();
+  const uploadSlip = useOrderStore((state) => state.uploadSlip);
+  const loading = useOrderStore((state) => state.loading);
   const [statusMsg, setStatusMsg] = useState<{
     type: "error" | "success";
     text: string;

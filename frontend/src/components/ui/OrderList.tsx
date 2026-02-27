@@ -11,7 +11,8 @@ export const OrderList: React.FC<OrderListProps> = ({
 }) => {
   const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
   const { getAccessTokenSilently } = useAuth0();
-  const { cancelOrder, loading } = useOrderStore();
+  const cancelOrder = useOrderStore((state) => state.cancelOrder);
+  const loading = useOrderStore((state) => state.loading);
   const sortedOrders = [...myOrders].sort((a, b) => {
     const priority: Record<string, number> = {
       PENDING: 1,

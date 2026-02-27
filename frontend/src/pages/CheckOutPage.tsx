@@ -7,7 +7,8 @@ import { ChevronLeft, Lock } from "lucide-react";
 
 const CheckoutPage = () => {
   const { cart, totalPrice, clearCart } = useCartStore();
-  const { createOrder, loading } = useOrderStore();
+  const createOrder = useOrderStore((state) => state.createOrder);
+  const loading = useOrderStore((state) => state.loading);
   const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
 

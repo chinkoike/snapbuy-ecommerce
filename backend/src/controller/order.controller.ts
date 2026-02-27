@@ -142,7 +142,7 @@ export const createOrder = async (req: Request, res: Response) => {
       },
     );
 
-    res.status(201).json(result);
+    res.status(201).json({ success: true, data: result });
   } catch (error: unknown) {
     console.error("Error context:", error);
     const errorMessage =
@@ -273,7 +273,7 @@ export const adminUpdateOrderStatus = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: "Order status has been successfully updated",
-      order: updatedOrder,
+      data: updatedOrder,
     });
   } catch (error: unknown) {
     console.error("Error context:", error);
