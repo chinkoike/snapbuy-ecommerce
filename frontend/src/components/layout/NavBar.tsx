@@ -13,7 +13,8 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, loginWithRedirect, user: auth0User } = useAuth0();
   const userFromDb = useUserStore((state) => state.user);
-  const { categories, fetchCategories } = useCategoryStore();
+  const categories = useCategoryStore((state) => state.categories);
+  const fetchCategories = useCategoryStore((state) => state.fetchCategories);
   const openDrawer = useCartStore((state) => state.openDrawer);
   const { cart } = useCartStore();
   const navigate = useNavigate();

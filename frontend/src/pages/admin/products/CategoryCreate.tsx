@@ -12,8 +12,8 @@ export const CategoryCreate = () => {
     type: null,
     msg: "",
   });
-  const { addCategory, loading } = useCategoryStore();
-
+  const addCategory = useCategoryStore((state) => state.addCategory);
+  const loading = useCategoryStore((state) => state.loading);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;

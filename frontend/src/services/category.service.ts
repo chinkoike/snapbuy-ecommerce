@@ -4,7 +4,7 @@ import { api } from "../lib/axios";
 export const categoryService = {
   getAllCategories: async (): Promise<CategoryData[]> => {
     const res = await api.get("api/categories");
-    return Array.isArray(res.data) ? res.data : res.data.categories || [];
+    return Array.isArray(res.data) ? res.data : res.data.data || [];
   },
   createCategory: async (
     categoryName: string,
@@ -16,6 +16,6 @@ export const categoryService = {
       { headers: { Authorization: `Bearer ${token}` } },
     );
 
-    return res.data;
+    return res.data.data;
   },
 };

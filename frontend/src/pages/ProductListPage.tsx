@@ -9,12 +9,13 @@ import { useCategoryStore } from "../store/useCategoryStore";
 export const ProductList = () => {
   const { products, loading, error, fetchProducts, totalPages } =
     useProductStore();
-  const {
-    categories,
-    loading: categoriesLoading,
-    fetchCategories,
-  } = useCategoryStore();
 
+  const categories = useCategoryStore((state) => state.categories);
+
+  const fetchCategories = useCategoryStore((state) => state.fetchCategories);
+
+  const isCategoryLoading = useCategoryStore((state) => state.loading);
+  const errorCategory = useCategoryStore((state) => state.error);
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -40,7 +41,7 @@ export const ProductList = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [fetchProducts, fetchCategories, selectedCategory, currentPage, search]);
 
-  if (loading || categoriesLoading)
+  if (isCategoryLoading || loading)
     return (
       <div className="bg-white min-h-screen animate-pulse">
         {/* Header Skeleton */}
@@ -78,7 +79,7 @@ export const ProductList = () => {
       </div>
     );
 
-  if (error)
+  if (errorCategory)
     return (
       <div className="text-center p-20 text-red-500 uppercase text-xs tracking-widest">
         {error}

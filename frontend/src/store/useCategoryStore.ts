@@ -25,16 +25,21 @@ export const useCategoryStore = create<CategoryStore>((set) => ({
       const newCategory = await categoryService.createCategory(name, token);
 
       set((state) => ({
-        categories: [...state.categories, newCategory],
+        categories: [newCategory, ...state.categories],
         loading: false,
       }));
     } catch (error: unknown) {
-      console.log(error);
+      let message = "An unexpected error occurred";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
 
       set({
+        error: message,
         loading: false,
       });
-      throw error;
+      console.error(message);
     }
   },
 }));

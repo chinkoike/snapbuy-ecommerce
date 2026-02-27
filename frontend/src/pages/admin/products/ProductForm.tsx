@@ -11,7 +11,8 @@ export const ProductForm = ({
   onClose,
 }: ProductFormProps & { onClose: () => void }) => {
   const { products, createProduct, updateProduct, loading } = useProductStore();
-  const { categories, fetchCategories } = useCategoryStore();
+  const categories = useCategoryStore((state) => state.categories);
+  const fetchCategories = useCategoryStore((state) => state.fetchCategories);
   const { getAccessTokenSilently } = useAuth0();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -35,7 +36,7 @@ export const ProductForm = ({
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [fetchCategories]);
+  }, [fetchCategories, previewUrl]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
