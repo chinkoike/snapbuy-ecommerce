@@ -22,8 +22,8 @@ export const useProductStore = create<ProductState>((set) => ({
       const data = await ProductService.getAll(categoryId, page, search);
 
       set({
-        products: Array.isArray(data) ? data : data.products,
-        totalPages: data.totalPages,
+        products: data.products,
+        totalPages: data.pagination.totalPages,
         loading: false,
       });
     } catch (err: unknown) {

@@ -19,12 +19,12 @@ export const ProductService = {
         ...(categoryId && { categoryId }),
       },
     });
-    return res.data;
+    return res.data.data;
   },
 
   getById: async (id: string): Promise<ProductData> => {
     const res = await api.get(`/api/products/${id}`);
-    return res.data;
+    return res.data.data;
   },
 
   create: async (
@@ -49,7 +49,7 @@ export const ProductService = {
       },
     });
 
-    return res.data;
+    return res.data.data;
   },
 
   uploadImage: async (file: File, token: string) => {
@@ -62,7 +62,7 @@ export const ProductService = {
         "Content-Type": "multipart/form-data",
       },
     });
-    return res.data;
+    return res.data.data;
   },
   update: async (
     id: string,
@@ -72,7 +72,7 @@ export const ProductService = {
     const res = await api.patch(`/api/admin/products/${id}`, data, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res.data;
+    return res.data.data;
   },
 
   delete: async (id: string, token: string): Promise<ProductData> => {
@@ -83,6 +83,6 @@ export const ProductService = {
         headers: { Authorization: `Bearer ${token}` },
       },
     );
-    return res.data;
+    return res.data.data;
   },
 };

@@ -10,7 +10,11 @@ export const ProductForm = ({
   onSuccess,
   onClose,
 }: ProductFormProps & { onClose: () => void }) => {
-  const { products, createProduct, updateProduct, loading } = useProductStore();
+  const products = useProductStore((state) => state.products);
+  const createProduct = useProductStore((state) => state.createProduct);
+  const updateProduct = useProductStore((state) => state.updateProduct);
+  const isProductLoading = useProductStore((state) => state.loading);
+
   const categories = useCategoryStore((state) => state.categories);
   const fetchCategories = useCategoryStore((state) => state.fetchCategories);
   const { getAccessTokenSilently } = useAuth0();
@@ -99,7 +103,7 @@ export const ProductForm = ({
       setFormError("Submission Error:");
     }
   };
-  if (loading && products.length === 0)
+  if (isProductLoading && products.length === 0)
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
         <div className="animate-pulse font-black tracking-widest uppercase opacity-20">
@@ -288,14 +292,14 @@ export const ProductForm = ({
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isProductLoading}
                 className={`flex-1 px-8 py-5 text-[10px] font-black uppercase tracking-[0.3em] transition-all cursor-pointer shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 ${
-                  loading
+                  isProductLoading
                     ? "bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none"
                     : "bg-black text-white hover:bg-zinc-800"
                 }`}
               >
-                {loading
+                {isProductLoading
                   ? "Syncing..."
                   : initialData
                     ? "Commit_Changes"

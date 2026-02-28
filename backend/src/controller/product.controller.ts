@@ -1,11 +1,7 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.js";
-import type {
-  ProductDetailResponse,
-  ProductListResponse,
-} from "../../../shared/types/api.js";
+import type { ProductListResponse } from "../../../shared/types/api.js";
 import type { ProductData } from "../../../shared/types/product.js";
-import type { CreateProductInput } from "../../../shared/types/product.js";
 import { Prisma } from "@prisma/client";
 
 //----------------------get products controller---------------------------------------
@@ -21,16 +17,14 @@ export const getProducts = async (req: Request, res: Response) => {
       limit = "10",
     } = req.query;
 
-    // ✅ แปลงและกันค่าพัง
     const pageNumber = Math.max(1, Number(page) || 1);
     const limitNumber = Math.min(50, Math.max(1, Number(limit) || 10));
     // จำกัด limit ไม่เกิน 50 ป้องกันยิง DB หนัก
 
     const skip = (pageNumber - 1) * limitNumber;
 
-    // ✅ ใช้ Prisma type แทน any
+    // ใช้ Prisma type แทน any
     const where: Prisma.ProductWhereInput = {};
-    // 🔍 Search by name
     if (search && typeof search === "string") {
       where.name = {
         contains: search,
@@ -38,7 +32,7 @@ export const getProducts = async (req: Request, res: Response) => {
       };
     }
 
-    // 📂 Filter by category name
+    //  Filter by category name
     if (category && typeof category === "string") {
       where.category = {
         name: category,
@@ -47,7 +41,7 @@ export const getProducts = async (req: Request, res: Response) => {
     if (categoryId && categoryId !== "null") {
       where.categoryId = String(categoryId);
     }
-    // 💰 Filter by price range
+    //  Filter by price range
     if (min || max) {
       const priceFilter: { gte?: number; lte?: number } = {};
 
@@ -55,7 +49,7 @@ export const getProducts = async (req: Request, res: Response) => {
       if (max && !isNaN(Number(max))) priceFilter.lte = Number(max);
 
       if (Object.keys(priceFilter).length > 0) {
-        where.price = priceFilter; // ต้องใส่บรรทัดนี้ ข้อมูลราคาถึงจะถูกกรอง
+        where.price = priceFilter;
       }
     }
 
@@ -80,10 +74,12 @@ export const getProducts = async (req: Request, res: Response) => {
       },
     };
 
-    res.json(responseData);
-  } catch (error) {
-    console.error("Prisma Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.json({ success: true, data: responseData });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
@@ -103,10 +99,12 @@ export const getProductById = async (req: Request, res: Response) => {
 
     // ระบุ Type ให้ตรงกับที่ frontend คาดหวัง
     const responseData: ProductData = product;
-    res.json(responseData);
-  } catch (error) {
-    console.error("Database Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.json({ success: true, data: responseData });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
@@ -114,25 +112,20 @@ export const getProductById = async (req: Request, res: Response) => {
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const file = req.file as any; // มาจาก uploadCloud.single("image") ใน Route
+    const file = req.file as any;
 
-    // 1. ตรวจสอบไฟล์
     if (!file) {
-      return res.status(400).json({ error: "กรุณาอัปโหลดรูปภาพสินค้า" });
+      return res.status(400).json({ error: "Please upload product images" });
     }
     const imageUrl = file.path || file.secure_url;
 
-    // 2. เช็ค Category
     const categoryExists = await prisma.category.findUnique({
       where: { id: data.categoryId },
     });
     if (!categoryExists) {
-      return res
-        .status(400)
-        .json({ error: "Invalid categoryId (ไม่พบหมวดหมู่นี้)" });
+      return res.status(400).json({ error: "Invalid categoryId" });
     }
 
-    // 3. สร้าง Product (แปลงเลขด้วย Number + Math.round)
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
@@ -142,15 +135,15 @@ export const createProduct = async (req: Request, res: Response) => {
         imageUrl: imageUrl,
         categoryId: data.categoryId,
       },
-      include: { category: true }, // เพื่อให้ Frontend ได้ข้อมูลครบ
+      include: { category: true },
     });
 
-    return res.status(201).json(newProduct);
-  } catch (error: any) {
-    console.error("Create Product Error:", error);
-    return res
-      .status(500)
-      .json({ error: "Internal Server Error", details: error.message });
+    return res.status(201).json({ success: true, data: newProduct });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 
@@ -164,7 +157,6 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (description !== undefined) updateData.description = description;
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
 
-    // ป้องกัน Bug เรื่องตัวเลข
     if (price !== undefined) updateData.price = Math.round(Number(price));
     if (stock !== undefined) updateData.stock = Math.round(Number(stock));
 
@@ -183,13 +175,12 @@ export const updateProduct = async (req: Request, res: Response) => {
       include: { category: true },
     });
 
-    res.json(updated);
-  } catch (error: any) {
-    console.error("Update Error:", error);
-    res.status(500).json({
-      error: "Update failed",
-      details: error.code === "P2025" ? "ไม่พบสินค้านี้ในระบบ" : error.message,
-    });
+    res.json({ success: true, data: updated });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };
 // ----------------------delete product controller---------------------------------------
@@ -209,7 +200,6 @@ export const toggleProductStatus = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // สลับค่า isActive
     const newStatus = !existingProduct.isActive;
 
     // ถ้ากำลังจะลบ (set false) ให้เช็คเรื่อง Order เหมือนเดิม
@@ -229,14 +219,15 @@ export const toggleProductStatus = async (req: Request, res: Response) => {
       where: { id },
       data: {
         isActive: newStatus,
-        // ถ้ากลับมา Active ให้ล้าง deletedAt ถ้าลบให้ใส่ Date
         deletedAt: newStatus ? null : new Date(),
       },
     });
 
-    return res.status(200).json(updatedProduct);
-  } catch (error) {
-    console.error("Toggle Product Error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(200).json({ success: true, data: updatedProduct });
+  } catch (error: unknown) {
+    console.error("Error context:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ success: false, error: errorMessage });
   }
 };

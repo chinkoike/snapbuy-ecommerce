@@ -7,7 +7,9 @@ import { ProductCard } from "../components/ui/ProductCard";
 const HomePage = () => {
   const { isAuthenticated, user, loginWithRedirect } = useAuth0();
 
-  const { products, fetchProducts, loading } = useProductStore();
+  const products = useProductStore((state) => state.products);
+  const fetchProducts = useProductStore((state) => state.fetchProducts);
+  const loading = useProductStore((state) => state.loading);
 
   useEffect(() => {
     fetchProducts();

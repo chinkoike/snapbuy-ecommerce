@@ -95,8 +95,12 @@ export interface ProductCardProps {
 }
 export interface GetProductsResponse {
   products: ProductData[];
-  totalPages: number;
-  totalCount: number;
+  pagination: {
+    totalItems: number;
+    currentPage: number;
+    totalPages: number;
+    limit: number;
+  };
 }
 export interface ProductListProps {
   onEdit: (product: ProductData) => void;

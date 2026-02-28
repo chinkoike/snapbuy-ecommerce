@@ -7,15 +7,17 @@ import { useProductStore } from "../store/useProductStore";
 import { useCategoryStore } from "../store/useCategoryStore";
 
 export const ProductList = () => {
-  const { products, loading, error, fetchProducts, totalPages } =
-    useProductStore();
+  const products = useProductStore((state) => state.products);
+  const totalPages = useProductStore((state) => state.totalPages);
+  const isProductLoading = useProductStore((state) => state.loading);
+  const productError = useProductStore((state) => state.error);
+  const fetchProducts = useProductStore((state) => state.fetchProducts);
 
   const categories = useCategoryStore((state) => state.categories);
-
   const fetchCategories = useCategoryStore((state) => state.fetchCategories);
-
   const isCategoryLoading = useCategoryStore((state) => state.loading);
   const errorCategory = useCategoryStore((state) => state.error);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -25,23 +27,25 @@ export const ProductList = () => {
     if (id) {
       setSearchParams({ category: id, page: "1" });
     } else {
-      setSearchParams({});
+      setSearchParams({ page: "1" });
     }
   };
 
-  // ฟังก์ชันจัดการเปลี่ยนหน้า
   const handlePageChange = (page: number) => {
     const currentParams = Object.fromEntries(searchParams.entries());
     setSearchParams({ ...currentParams, page: page.toString() });
   };
 
   useEffect(() => {
-    fetchProducts(selectedCategory, currentPage, search);
     fetchCategories();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [fetchProducts, fetchCategories, selectedCategory, currentPage, search]);
+  }, [fetchCategories]);
 
-  if (isCategoryLoading || loading)
+  useEffect(() => {
+    fetchProducts(selectedCategory, currentPage, search);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [selectedCategory, currentPage, search, fetchProducts]);
+
+  if (isCategoryLoading || isProductLoading)
     return (
       <div className="bg-white min-h-screen animate-pulse">
         {/* Header Skeleton */}
@@ -79,13 +83,16 @@ export const ProductList = () => {
       </div>
     );
 
-  if (errorCategory)
+  if (productError) {
     return (
       <div className="text-center p-20 text-red-500 uppercase text-xs tracking-widest">
-        {error}
+        Error loading products: {productError}
       </div>
     );
-
+  }
+  if (errorCategory) {
+    console.error("Category Error:", errorCategory);
+  }
   return (
     <div className="bg-white min-h-screen text-black">
       <div className="max-w-7xl mx-auto px-6 pt-12 pb-6 border-b border-black flex justify-between items-end">

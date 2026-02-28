@@ -5,7 +5,12 @@ import type { ProductListProps } from "../../../../../shared/types/product";
 
 export const ProductList = ({ onEdit }: ProductListProps) => {
   const { getAccessTokenSilently } = useAuth0();
-  const { loading, products, fetchProducts, deleteProduct } = useProductStore();
+
+  const products = useProductStore((state) => state.products);
+  const fetchProducts = useProductStore((state) => state.fetchProducts);
+  const isProductLoading = useProductStore((state) => state.loading);
+  const deleteProduct = useProductStore((state) => state.deleteProduct);
+
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [confirmData, setConfirmData] = useState<{
     id: string;
@@ -30,7 +35,7 @@ export const ProductList = ({ onEdit }: ProductListProps) => {
       setConfirmData(null); // ปิด modal
     }
   };
-  if (loading && products.length === 0)
+  if (isProductLoading && products.length === 0)
     return (
       <div className="p-8 flex items-center justify-center min-h-[60vh]">
         <div className="animate-pulse font-black tracking-widest uppercase opacity-20">
