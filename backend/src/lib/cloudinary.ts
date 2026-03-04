@@ -13,7 +13,6 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (_req: any, file: any) => {
-    // ใส่ : any ให้ทั้งคู่
     // ดึงชื่อไฟล์เดิมมาทำความสะอาด (เอาช่องว่างออก)
     const originalName = file.originalname.split(".")[0].replace(/\s+/g, "-");
     const uniqueSuffix = Date.now();
@@ -26,7 +25,6 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// สร้าง Middleware สำหรับ Multer
 export const uploadCloud = multer({ storage });
 
 export default cloudinary;

@@ -3,9 +3,36 @@ import { prisma } from "../lib/prisma.js";
 import type { ProductListResponse } from "../../../shared/types/api.js";
 import type { ProductData } from "../../../shared/types/product.js";
 import { Prisma } from "@prisma/client";
+import redisClient from "../lib/redis.js";
 
 //----------------------get products controller---------------------------------------
 export const getProducts = async (req: Request, res: Response) => {
+  const sortedQuery = Object.keys(req.query)
+    .sort()
+    .reduce((obj: any, key) => {
+      obj[key] = req.query[key];
+      return obj;
+    }, {});
+  const cacheKey = `products:${JSON.stringify(sortedQuery)}`;
+
+  let cachedData = null;
+
+  // 2. พยายามดึงจาก Cache (ถ้า Redis พัง ให้ข้ามไป DB แทน ไม่ให้ App ล่ม)
+  try {
+    if (redisClient.isReady) {
+      cachedData = await redisClient.get(cacheKey);
+    }
+  } catch (err) {
+    console.error("Redis Cache Error:", err);
+  }
+
+  if (cachedData) {
+    return res.json({
+      success: true,
+      data: JSON.parse(cachedData),
+      from: "cache",
+    });
+  }
   try {
     const {
       search,
@@ -73,7 +100,11 @@ export const getProducts = async (req: Request, res: Response) => {
         limit: limitNumber,
       },
     };
-
+    if (redisClient.isReady) {
+      redisClient
+        .setEx(cacheKey, 600, JSON.stringify(responseData))
+        .catch((err) => console.error("Redis Set Error:", err));
+    }
     res.json({ success: true, data: responseData });
   } catch (error: unknown) {
     console.error("Error context:", error);
@@ -86,19 +117,32 @@ export const getProducts = async (req: Request, res: Response) => {
 //----------------------get product by id controller---------------------------------------
 export const getProductById = async (req: Request, res: Response) => {
   const id = req.params.id as string;
+  const cacheKey = `product${id}`;
 
   try {
+    if (redisClient.isReady) {
+      const cacheProduct = await redisClient.get(cacheKey);
+      if (cacheProduct) {
+        return res.json({
+          success: true,
+          data: JSON.parse(cacheProduct),
+          from: "cache",
+        });
+      }
+    }
     const product = await prisma.product.findUnique({
       where: { id: id },
-      include: { category: true }, // ต้อง include เพื่อให้ตรงกับ ProductData
+      include: { category: true },
     });
 
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-
-    // ระบุ Type ให้ตรงกับที่ frontend คาดหวัง
     const responseData: ProductData = product;
+
+    if (redisClient.isReady) {
+      await redisClient.setEx(cacheKey, 3600, JSON.stringify(responseData));
+    }
     res.json({ success: true, data: responseData });
   } catch (error: unknown) {
     console.error("Error context:", error);
@@ -137,7 +181,8 @@ export const createProduct = async (req: Request, res: Response) => {
       },
       include: { category: true },
     });
-
+    const keys = await redisClient.keys("products:*");
+    if (keys.length > 0) await redisClient.del(keys);
     return res.status(201).json({ success: true, data: newProduct });
   } catch (error: unknown) {
     console.error("Error context:", error);
@@ -175,6 +220,12 @@ export const updateProduct = async (req: Request, res: Response) => {
       include: { category: true },
     });
 
+    if (redisClient.isReady) {
+      await redisClient.del(`product:${id}`);
+
+      const keys = await redisClient.keys("products:*");
+      if (keys.length > 0) await redisClient.del(keys);
+    }
     res.json({ success: true, data: updated });
   } catch (error: unknown) {
     console.error("Error context:", error);
@@ -222,7 +273,12 @@ export const toggleProductStatus = async (req: Request, res: Response) => {
         deletedAt: newStatus ? null : new Date(),
       },
     });
+    if (redisClient.isReady) {
+      await redisClient.del(`product:${id}`);
 
+      const keys = await redisClient.keys("products:*");
+      if (keys.length > 0) await redisClient.del(keys);
+    }
     return res.status(200).json({ success: true, data: updatedProduct });
   } catch (error: unknown) {
     console.error("Error context:", error);
